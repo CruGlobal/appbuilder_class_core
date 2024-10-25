@@ -432,7 +432,7 @@ module.exports = class ABFieldConnectCore extends ABField {
          } else {
             colName = indexField
                ? indexField.columnName
-               : this.fieldLink.columnName;
+               : datasourceLink.PK();
          }
       }
       // NO CUSTOM INDEX
