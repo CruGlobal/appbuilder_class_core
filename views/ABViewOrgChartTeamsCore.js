@@ -5,6 +5,9 @@ const ABViewOrgChartTeamsPropertyComponentDefaults = {
    teamLink: "",
    teamName: "",
    topTeam: "",
+   teamStrategy: "",
+   strategyCode: "",
+   strategyColors: [],
    fields: "",
    direction: "t2b",
    depth: 99,
@@ -83,6 +86,18 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
       this.settings.teamCanInactivate =
          this.settings.teamCanInactivate ??
          ABViewOrgChartTeamsPropertyComponentDefaults.teamCanInactivate;
+
+      this.settings.teamStrategy =
+         this.settings.teamStrategy ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.teamStrategy;
+
+      this.settings.strategyCode =
+         this.settings.strategyCode ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.strategyCode;
+
+      this.settings.strategyColors =
+         this.settings.strategyColors ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.strategyColors;
 
       this.settings.direction =
          this.settings.direction ??
