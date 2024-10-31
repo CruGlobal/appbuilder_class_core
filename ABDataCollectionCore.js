@@ -1408,16 +1408,20 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
             }
             // filter before add new record
             else if (this.isValidData(updatedVals)) {
-               // this means the updated record was not loaded yet so we are adding it to the top of the grid
-               // the placement will probably change on the next load of the data
-               this.__dataCollection.add(updatedVals, 0);
+               // OK we have a value, that COULD be in our DC
+               // before we add it, let's make sure we are not limited in our selection of items:
+               if (!this.isCursorFollow && !this.settings.fixSelect) {
+                  // this means the updated record was not loaded yet so we are adding it to the top of the grid
+                  // the placement will probably change on the next load of the data
+                  this.__dataCollection.add(updatedVals, 0);
 
-               if (this.__treeCollection)
-                  this.parseTreeCollection({
-                     data: [updatedVals],
-                  });
+                  if (this.__treeCollection)
+                     this.parseTreeCollection({
+                        data: [updatedVals],
+                     });
 
-               this.emit("create", updatedVals);
+                  this.emit("create", updatedVals);
+               }
             }
          }
 
