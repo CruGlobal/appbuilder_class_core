@@ -158,7 +158,7 @@ module.exports = class FilterComplexCore extends ABComponent {
             return;
          }
          // Skip incomplete filter condition
-         else if (!filter.key || !filter.rule) return;
+         else if (!filter || !filter.key || !filter.rule) return;
 
          const fieldInfo = (this._Fields || []).filter(
             (f) => f.id == filter.key || f.columnName == filter.key
