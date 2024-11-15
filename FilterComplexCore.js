@@ -571,8 +571,12 @@ module.exports = class FilterComplexCore extends ABComponent {
       // If value will be the connected object, then pull value (string)
       if (typeof connectedVal == "object") {
          connectedVal =
-            connectedVal[field.indexField.columnName] ??
-            connectedVal[field.indexField2.columnName] ??
+            (field.indexField
+               ? connectedVal[field.indexField.columnName]
+               : null) ??
+            (field.indexField2
+               ? connectedVal[field.indexField2.columnName]
+               : null) ??
             connectedVal[field.columnName] ??
             connectedVal;
       }
