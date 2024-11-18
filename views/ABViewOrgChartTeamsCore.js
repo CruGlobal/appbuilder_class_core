@@ -14,6 +14,7 @@ const ABViewOrgChartTeamsPropertyComponentDefaults = {
    color: "#00BCD4",
    // visibleLevel: 2,
    draggable: 1,
+   showGroupTitle: 0,
    dropContentToCreate: 0,
    pan: 1,
    zoom: 1,
@@ -24,6 +25,8 @@ const ABViewOrgChartTeamsPropertyComponentDefaults = {
    contentFieldFilter: null,
    contentGroupByField: "",
    contentDisplayedFields: {},
+   showDataPanel: 0,
+   dataPanelDCs: {},
 };
 
 const ABViewOrgChartTeamsDefaults = {
@@ -152,9 +155,18 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
       this.settings.contentGroupByField =
          this.settings.contentGroupByField ??
          ABViewOrgChartTeamsPropertyComponentDefaults.contentGroupByField;
+      this.settings.showGroupTitle =
+         this.settings.showGroupTitle ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.showGroupTitle;
       this.settings.contentDisplayedFields =
          this.settings.contentDisplayedFields ??
          ABViewOrgChartTeamsPropertyComponentDefaults.contentDisplayedFields;
+      this.settings.showDataPanel =
+         this.settings.showDataPanel ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.showDataPanel;
+      this.settings.dataPanelDCs =
+         this.settings.dataPanelDCs ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.dataPanelDCs;
    }
 
    get datacollection() {
