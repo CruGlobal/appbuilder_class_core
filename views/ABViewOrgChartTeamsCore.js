@@ -14,11 +14,19 @@ const ABViewOrgChartTeamsPropertyComponentDefaults = {
    color: "#00BCD4",
    // visibleLevel: 2,
    draggable: 1,
+   showGroupTitle: 0,
+   dropContentToCreate: 0,
    pan: 1,
    zoom: 1,
    height: 0,
    export: 0,
    exportFilename: "",
+   contentField: "",
+   contentFieldFilter: null,
+   contentGroupByField: "",
+   contentDisplayedFields: {},
+   showDataPanel: 0,
+   dataPanelDCs: {},
 };
 
 const ABViewOrgChartTeamsDefaults = {
@@ -120,6 +128,11 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
             ABViewOrgChartTeamsPropertyComponentDefaults.draggable
       );
 
+      this.settings.dropContentToCreate = JSON.parse(
+         this.settings.dropContentToCreate ??
+            ABViewOrgChartTeamsPropertyComponentDefaults.dropContentToCreate
+      );
+
       this.settings.height = parseInt(
          this.settings.height ??
             ABViewOrgChartTeamsPropertyComponentDefaults.height
@@ -133,6 +146,27 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
       this.settings.exportFilename =
          this.settings.exportFilename ??
          ABViewOrgChartTeamsPropertyComponentDefaults.exportFilename;
+      this.settings.contentField =
+         this.settings.contentField ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.contentField;
+      this.settings.contentFieldFilter =
+         this.settings.contentFieldFilter ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.contentFieldFilter;
+      this.settings.contentGroupByField =
+         this.settings.contentGroupByField ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.contentGroupByField;
+      this.settings.showGroupTitle =
+         this.settings.showGroupTitle ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.showGroupTitle;
+      this.settings.contentDisplayedFields =
+         this.settings.contentDisplayedFields ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.contentDisplayedFields;
+      this.settings.showDataPanel =
+         this.settings.showDataPanel ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.showDataPanel;
+      this.settings.dataPanelDCs =
+         this.settings.dataPanelDCs ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.dataPanelDCs;
    }
 
    get datacollection() {
