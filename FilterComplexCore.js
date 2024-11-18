@@ -578,6 +578,7 @@ module.exports = class FilterComplexCore extends ABComponent {
                ? connectedVal[field.indexField2.columnName]
                : null) ??
             connectedVal[field.columnName] ??
+            connectedVal.id
             connectedVal;
       }
 
