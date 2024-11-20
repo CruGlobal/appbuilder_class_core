@@ -14,11 +14,20 @@ const ABViewOrgChartTeamsPropertyComponentDefaults = {
    color: "#00BCD4",
    // visibleLevel: 2,
    draggable: 1,
+   showGroupTitle: 0,
+   dropContentToCreate: 0,
    pan: 1,
    zoom: 1,
    height: 0,
    export: 0,
    exportFilename: "",
+   contentField: "",
+   editContentFieldsToCreateNew: [],
+   contentFieldFilter: null,
+   contentGroupByField: "",
+   contentDisplayedFields: {},
+   showDataPanel: 0,
+   dataPanelDCs: {},
 };
 
 const ABViewOrgChartTeamsDefaults = {
@@ -33,7 +42,7 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
          values,
          application,
          parent,
-         defaultValues || ABViewOrgChartTeamsDefaults
+         defaultValues || ABViewOrgChartTeamsDefaults,
       );
    }
 
@@ -100,7 +109,7 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
 
       this.settings.depth = parseInt(
          this.settings.depth ??
-            ABViewOrgChartTeamsPropertyComponentDefaults.depth
+            ABViewOrgChartTeamsPropertyComponentDefaults.depth,
       );
 
       this.settings.color =
@@ -108,31 +117,61 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
          ABViewOrgChartTeamsPropertyComponentDefaults.color;
 
       this.settings.pan = JSON.parse(
-         this.settings.pan ?? ABViewOrgChartTeamsPropertyComponentDefaults.pan
+         this.settings.pan ?? ABViewOrgChartTeamsPropertyComponentDefaults.pan,
       );
 
       this.settings.zoom = JSON.parse(
-         this.settings.zoom ?? ABViewOrgChartTeamsPropertyComponentDefaults.zoom
+         this.settings.zoom ??
+            ABViewOrgChartTeamsPropertyComponentDefaults.zoom,
       );
 
       this.settings.draggable = JSON.parse(
          this.settings.draggable ??
-            ABViewOrgChartTeamsPropertyComponentDefaults.draggable
+            ABViewOrgChartTeamsPropertyComponentDefaults.draggable,
+      );
+
+      this.settings.dropContentToCreate = JSON.parse(
+         this.settings.dropContentToCreate ??
+            ABViewOrgChartTeamsPropertyComponentDefaults.dropContentToCreate,
       );
 
       this.settings.height = parseInt(
          this.settings.height ??
-            ABViewOrgChartTeamsPropertyComponentDefaults.height
+            ABViewOrgChartTeamsPropertyComponentDefaults.height,
       );
 
       this.settings.export = JSON.parse(
          this.settings.export ??
-            ABViewOrgChartTeamsPropertyComponentDefaults.export
+            ABViewOrgChartTeamsPropertyComponentDefaults.export,
       );
 
       this.settings.exportFilename =
          this.settings.exportFilename ??
          ABViewOrgChartTeamsPropertyComponentDefaults.exportFilename;
+      this.settings.contentField =
+         this.settings.contentField ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.contentField;
+      this.settings.editContentFieldsToCreateNew =
+         this.settings.editContentFieldsToCreateNew ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.editContentFieldsToCreateNew;
+      this.settings.contentFieldFilter =
+         this.settings.contentFieldFilter ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.contentFieldFilter;
+      this.settings.contentGroupByField =
+         this.settings.contentGroupByField ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.contentGroupByField;
+      this.settings.showGroupTitle =
+         this.settings.showGroupTitle ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.showGroupTitle;
+      this.settings.contentDisplayedFields =
+         this.settings.contentDisplayedFields ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.contentDisplayedFields;
+      this.settings.showDataPanel =
+         this.settings.showDataPanel ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.showDataPanel;
+      this.settings.dataPanelDCs =
+         this.settings.dataPanelDCs ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.dataPanelDCs;
    }
 
    get datacollection() {
@@ -145,7 +184,7 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
       // OrgChart supports only one parent node.
       return (
          object?.connectFields(
-            (f) => f.linkType() == "many" && f.linkViaType() == "one"
+            (f) => f.linkType() == "many" && f.linkViaType() == "one",
          ) ?? []
       );
    }
