@@ -284,7 +284,7 @@ module.exports = class ABFieldConnectCore extends ABField {
             .join(", ");
       // string
       else if (val) {
-         if (val.text == null) return linkedObject.displayData(rowData) || "";
+         if (val.text == null) return linkedObject.displayData(val) || "";
          else if (val.text) return val.text || "";
       }
       // empty string
