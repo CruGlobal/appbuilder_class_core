@@ -218,7 +218,14 @@ module.exports = class ABFieldCalculateCore extends ABField {
     * @param {integer} place
     * @param {string} alias [Optional]
     */
-   static convertToJs(object, formula, rowData, place, alias = null) {
+   static convertToJs(
+      object,
+      formula,
+      rowData,
+      place,
+      alias = null,
+      recalculate = false
+   ) {
       if (!formula) return "";
 
       // replace with current date
@@ -247,7 +254,7 @@ module.exports = class ABFieldCalculateCore extends ABField {
          }
          // calculate and formula fields
          else if (f.key == "calculate" || f.key == "formula") {
-            let calVal = f.format(rowData) || 0;
+            let calVal = f.format(rowData, recalculate) || 0;
 
             // pull number only
             if (typeof calVal == "string")
@@ -299,7 +306,7 @@ module.exports = class ABFieldCalculateCore extends ABField {
       delete values[this.columnName];
    }
 
-   format(rowData) {
+   format(rowData, recalculate = false) {
       let place = 0;
       if (this.settings.decimalSign != "none") {
          place = this.settings.decimalPlaces;
@@ -311,7 +318,8 @@ module.exports = class ABFieldCalculateCore extends ABField {
             this.settings.formula,
             rowData,
             place,
-            this.alias
+            this.alias,
+            recalculate
          );
 
          if (typeof result == "string")
