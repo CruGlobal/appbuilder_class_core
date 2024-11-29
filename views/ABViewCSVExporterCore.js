@@ -13,6 +13,7 @@ const ABViewCSVExporterPropertyComponentDefaults = {
    filename: "exportCSV",
    hasHeader: true,
    width: 150,
+   hiddenFieldIds: [],
 };
 
 module.exports = class ABViewCSVExporterCore extends ABViewWidget {
@@ -59,5 +60,9 @@ module.exports = class ABViewCSVExporterCore extends ABViewWidget {
          values.settings.width ||
             ABViewCSVExporterPropertyComponentDefaults.width
       );
+
+      this.settings.hiddenFieldIds =
+         values.settings.hiddenFieldIds ||
+         ABViewCSVExporterPropertyComponentDefaults.hiddenFieldIds;
    }
 };
