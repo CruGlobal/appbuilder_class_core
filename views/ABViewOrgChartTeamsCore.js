@@ -24,6 +24,8 @@ const ABViewOrgChartTeamsPropertyComponentDefaults = {
    contentField: "",
    editContentFieldsToCreateNew: [],
    contentFieldFilter: null,
+   contentFieldDateStart: "",
+   contentFieldDateEnd: "",
    contentGroupByField: "",
    contentDisplayedFields: {},
    contentDisplayedFieldTypes: {},
@@ -159,6 +161,12 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
       this.settings.contentFieldFilter =
          this.settings.contentFieldFilter ??
          ABViewOrgChartTeamsPropertyComponentDefaults.contentFieldFilter;
+      this.settings.contentFieldDateStart =
+         this.settings.contentFieldDateStart ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.contentFieldDateStart;
+      this.settings.connectFieldDateEnd =
+         this.settings.connectFieldDateEnd ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.contentFieldDateEnd;
       this.settings.contentGroupByField =
          this.settings.contentGroupByField ??
          ABViewOrgChartTeamsPropertyComponentDefaults.contentGroupByField;
