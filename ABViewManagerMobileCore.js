@@ -30,6 +30,7 @@ var Views = {};
    require("../platform/mobile/ABMobileViewFormTextbox"),
    require("../platform/mobile/ABMobileViewLabel"),
    require("../platform/mobile/ABMobileViewList"),
+   require("../platform/mobile/ABMobileViewTimeline"),
 ].forEach((v) => {
    if (v.default?.common) {
       v = v.default;
