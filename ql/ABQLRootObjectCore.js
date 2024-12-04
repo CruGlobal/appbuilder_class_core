@@ -31,7 +31,7 @@ class ABQLObjectCore extends ABQL {
    ///
    /// Instance Methods
    ///
-   initObject(attributes) {
+   initObject(/* attributes */) {
       if (!this.object && this.params) {
          const objNameDef = this.parameterDefinitions.find((pDef) => {
             return pDef.type === "objectName";
@@ -43,7 +43,8 @@ class ABQLObjectCore extends ABQL {
          }
 
          if (!this.object) {
-            this.warningMessage("has no object set.", {
+            // This function exists on platform_web but not platform_service
+            this.warningMessage?.("has no object set.", {
                objectID: this.objectID,
             });
          }

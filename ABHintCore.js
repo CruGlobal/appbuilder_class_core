@@ -35,6 +35,7 @@ export default class ABHintCore extends ABMLClass {
       }
     }
     */
+
       let active = attributes?.settings?.active ?? "1";
 
       this.id = attributes?.id || "";

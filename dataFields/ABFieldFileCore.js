@@ -175,7 +175,9 @@ export default class ABFieldFileCore extends ABField {
       if ("string" === typeof val) {
          try {
             myParameter[this.columnName] = JSON.parse(val);
-         } catch (e) {}
+         } catch (e) {
+            /* ignore */
+         }
       }
 
       return myParameter;

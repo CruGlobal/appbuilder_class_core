@@ -288,7 +288,7 @@ export default class ABProcessTaskCore extends ABMLClass {
                   nextTasks.push(targetTask);
                }
             } else {
-               var error = new Error(
+               let error = new Error(
                   `Configuration Error: No ProcessTask instance for diagramID[${tid}]`
                );
                this.AB.notify.builder(error, { task: this });

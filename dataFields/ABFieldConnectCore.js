@@ -279,7 +279,7 @@ export default class ABFieldConnectCore extends ABField {
             .join(", ");
       // string
       else if (val) {
-         if (val.text == null) return linkedObject.displayData(rowData) || "";
+         if (val.text == null) return linkedObject.displayData(val) || "";
          else if (val.text) return val.text || "";
       }
       // empty string
@@ -437,7 +437,7 @@ export default class ABFieldConnectCore extends ABField {
          } else {
             colName = indexField
                ? indexField.columnName
-               : this.fieldLink.columnName;
+               : datasourceLink.PK();
          }
       }
       // NO CUSTOM INDEX
