@@ -23,6 +23,7 @@ const ABViewOrgChartTeamsPropertyComponentDefaults = {
    exportFilename: "",
    contentField: "",
    editContentFieldsToCreateNew: [],
+   setEditableContentFields: [],
    contentFieldFilter: null,
    contentFieldDateStart: "",
    contentFieldDateEnd: "",
@@ -158,6 +159,9 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
       this.settings.editContentFieldsToCreateNew =
          this.settings.editContentFieldsToCreateNew ??
          ABViewOrgChartTeamsPropertyComponentDefaults.editContentFieldsToCreateNew;
+      this.settings.setEditableContentFields =
+         this.settings.setEditableContentFields ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.setEditableContentFields;
       this.settings.contentFieldFilter =
          this.settings.contentFieldFilter ??
          ABViewOrgChartTeamsPropertyComponentDefaults.contentFieldFilter;
