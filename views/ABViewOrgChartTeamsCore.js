@@ -6,6 +6,7 @@ const ABViewOrgChartTeamsPropertyComponentDefaults = {
    teamName: "",
    topTeam: "",
    teamStrategy: "",
+   subStrategy: "",
    strategyCode: "",
    strategyColors: [],
    fields: "",
@@ -100,6 +101,10 @@ module.exports = class ABViewOrgChartTeamsCore extends ABViewWidget {
       this.settings.teamStrategy =
          this.settings.teamStrategy ??
          ABViewOrgChartTeamsPropertyComponentDefaults.teamStrategy;
+
+      this.settings.subStrategy =
+         this.settings.subStrategy ??
+         ABViewOrgChartTeamsPropertyComponentDefaults.subStrategy;
 
       this.settings.strategyCode =
          this.settings.strategyCode ??
