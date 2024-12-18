@@ -82,6 +82,13 @@ const defaultValues = {
 export default class ABFieldUserCore extends ABFieldConnect {
    constructor(values, object) {
       super(values, object, ABFieldUserDefaults);
+
+      this.isUser = true;
+      // {bool}
+      // is this an ABFieldUser type of field.
+      // this is a simplified helper to identify if an ABField is a type
+      // of User field.  Since this is the only place it is defined,
+      // all other field types will be falsy
    }
 
    // return the default values for this DataField
