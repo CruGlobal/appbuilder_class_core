@@ -1918,7 +1918,7 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
 
                      let colName = this.fieldLink?.fieldLink?.relationName?.();
                      let valuesToAdd = {};
-                     let valuesIn = colName ?? (linkCursor[colName] || []);
+                     let valuesIn = colName ? (linkCursor[colName] || []) : [];
                      if (!Array.isArray(valuesIn)) valuesIn = [valuesIn];
                      valuesIn = valuesIn.filter((v) => v);
                      valuesIn.forEach((v) => {
