@@ -321,6 +321,12 @@ module.exports = class FilterComplexCore extends ABComponent {
             result =
                value.setHours(0, 0, 0, 0) == compareValue.setHours(0, 0, 0, 0);
             break;
+         case "is_empty":
+            result = !value;
+            break;
+         case "is_not_empty":
+            result = !!value;
+            break;
          default:
             result = this.queryFieldValid(value, rule, compareValue);
             break;
@@ -578,8 +584,8 @@ module.exports = class FilterComplexCore extends ABComponent {
                ? connectedVal[field.indexField2.columnName]
                : null) ??
             connectedVal[field.columnName] ??
-            connectedVal.id
-            connectedVal;
+            connectedVal.id;
+         connectedVal;
       }
 
       // Compare value isn't always a string?
@@ -959,6 +965,8 @@ module.exports = class FilterComplexCore extends ABComponent {
             this.labels.component.onOrAfterCurrentCondition,
          last_days: this.labels.component.onLastDaysCondition,
          next_days: this.labels.component.onNextDaysCondition,
+         is_empty: this.labels.component.isEmpty,
+         is_not_empty: this.labels.component.isNotEmpty,
       };
 
       let result = [];
@@ -970,6 +978,8 @@ module.exports = class FilterComplexCore extends ABComponent {
             case "greater_current":
             case "less_or_equal_current":
             case "greater_or_equal_current":
+            case "is_empty":
+            case "is_not_empty":
                result.push({
                   id: condKey,
                   value: dateConditions[condKey],
