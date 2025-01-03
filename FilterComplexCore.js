@@ -578,7 +578,8 @@ module.exports = class FilterComplexCore extends ABComponent {
                ? connectedVal[field.indexField2.columnName]
                : null) ??
             connectedVal[field.columnName] ??
-            connectedVal.id;
+            connectedVal.id ??
+            connectedVal;
       }
 
       // Compare value isn't always a string?
@@ -800,6 +801,11 @@ module.exports = class FilterComplexCore extends ABComponent {
                            opt.id == "is_not_empty"
                      );
                      conditions = stringResults.concat(conditions);
+
+                     // By Query Field
+                     conditions = conditions.concat(
+                        this.fieldsAddFiltersQuery(f, true)
+                     );
                   }
 
                   hasQueryField = false;
@@ -1201,14 +1207,6 @@ module.exports = class FilterComplexCore extends ABComponent {
               not_in_query: {
                  label: this.labels.component.notInQuery,
                  batch: "query",
-              },
-              in_query_field: {
-                 label: this.labels.component.inQueryField,
-                 batch: "queryField",
-              },
-              not_in_query_field: {
-                 label: this.labels.component.notInQueryField,
-                 batch: "queryField",
               },
            };
 
