@@ -992,6 +992,14 @@ module.exports = class FilterComplexCore extends ABComponent {
                   handler: (a, b) => this.dateValid(a, condKey, b),
                });
                break;
+            case "last_days":
+               result.push({
+                  id: condKey,
+                  value: dateConditions[condKey],
+                  batch: "text",
+                  handler: (a, b) => this.dateValid(a, condKey, b),
+               });
+               break;
             default:
                result.push({
                   id: condKey,
