@@ -1923,7 +1923,7 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
 
                      let colName = this.fieldLink?.fieldLink?.relationName?.();
                      let valuesToAdd = {};
-                     let valuesIn = colName ? (linkCursor[colName] || []) : [];
+                     let valuesIn = colName ? linkCursor[colName] || [] : [];
                      if (!Array.isArray(valuesIn)) valuesIn = [valuesIn];
                      valuesIn = valuesIn.filter((v) => v);
                      valuesIn.forEach((v) => {
@@ -2695,10 +2695,26 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
       if (dataCollectionLink && fieldLink) {
          const linkCursorId = dataCollectionLink?.getCursor()?.id;
          if (linkCursorId) {
+            const linkType = `${fieldLink.linkType()}:${fieldLink.linkViaType()}`;
+
+            let filterRule;
+            // NOTE: If object is query, then use "contains" because ABOBjectQuery return JSON
+            if (fieldLink.alias) {
+               filterRule = "contains";
+            }
+            // M:1
+            else if (linkType == "many:one") {
+               filterRule = "have_relation";
+            }
+            // 1:M
+            else {
+               filterRule = "equals";
+            }
+
             rule = {
                alias: fieldLink.alias, // ABObjectQuery
                key: fieldLink.id,
-               rule: fieldLink.alias ? "contains" : "equals", // NOTE: If object is query, then use "contains" because ABOBjectQuery return JSON
+               rule: filterRule,
                value: fieldLink.getRelationValue(
                   dataCollectionLink.__dataCollection.getItem(linkCursorId)
                ),
