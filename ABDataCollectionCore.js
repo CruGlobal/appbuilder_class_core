@@ -2813,9 +2813,10 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
          // loadData() routine.  In SQL, our linkRule might have an "equals"
          // rule, to match.  But in this context if our linktype is "many"
          // we need to change the rule to "contains":
-         if (this.fieldLink?.linkType() == "many") {
-            linkRule.rule = "contains";
-         }
+         // QUESTION: If this is still required, consider moving it into the `ruleLinkedData` function for maintainability. ??
+         // if (this.fieldLink?.linkType() == "many") {
+         //    linkRule.rule = "contains";
+         // }
 
          // if linkRule not already IN filter:
          let isAlreadyThere = false;
