@@ -436,6 +436,13 @@ module.exports = class ABProcessCore extends ABMLClass {
          null,
          this
       );
+      // Include data from the main process as well
+      if (this.key === "SubProcess") {
+         const parentFields = this.process.processDataFields(this);
+         if (parentFields) {
+            fields.push(...parentFields);
+         }
+      }
       return fields.length > 0 ? fields : null;
    }
 
