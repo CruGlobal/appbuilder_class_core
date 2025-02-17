@@ -123,11 +123,13 @@ export default class ABViewManagerCore {
       //		if ((values.key) && (Views[values.key])) {
       if (values.key) {
          if (!Views[values.key]) {
-            console.error(
-               "!! View[" +
-                  values.key +
-                  "] not yet defined.  Have an ABView instead:"
-            );
+            if (!isPlugin(values.key)) {
+               console.error(
+                  "!! View[" +
+                     values.key +
+                     "] not yet defined.  Have an ABView instead:"
+               );
+            }
             return new Views["view"](values, application, parent);
          }
 
@@ -151,4 +153,15 @@ export default class ABViewManagerCore {
       console.error(`Unknown View Key[${key}]`);
       return;
    }
+
+   static addViewClass(View) {
+      Views[View.common().key] = View;
+   }
+}
+
+/**
+ * Check if the key starts with plugin_
+ */
+function isPlugin(key) {
+   return key.split("_")[0] === "plugin";
 }

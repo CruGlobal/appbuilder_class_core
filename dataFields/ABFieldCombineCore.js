@@ -101,4 +101,56 @@ export default class ABFieldCombineCore extends ABField {
       // Remove every values, then we will use AUTO_INCREMENT of MySQL
       delete values[this.columnName];
    }
+
+   /**
+    * @method getCombinedFields
+    * Retrieve the fields used to combine and generate a specific value
+    *
+    * @return {Array}
+    */
+   getCombinedFields() {
+      const result = [];
+
+      (this.settings?.combinedFields ?? "").split(",").forEach((fieldId) => {
+         const fld = this.object.fields((f) => f.id == fieldId)[0];
+         if (!fld) return;
+
+         result.push(fld);
+      });
+
+      return result;
+   }
+
+   /**
+    * @method format
+    * Convert the value of a connected field (without a custom index) to display the label of the linked object
+    *
+    * @param {Object} rowData
+    * @returns {String}
+    */
+   format(rowData) {
+      let val = rowData[this.columnName] ?? "";
+
+      this.getCombinedFields().forEach((f, index) => {
+         if (
+            f.key != "connectObject" ||
+            f.settings.indexField ||
+            f.settings.indexField2
+         )
+            return;
+
+         let connectVal = rowData[f.relationName()];
+         if (!connectVal) return;
+
+         if (!Array.isArray(connectVal)) connectVal = [connectVal];
+
+         const connectLabel = connectVal
+            .map((item) => item.text ?? f.datasourceLink.displayData(item))
+            .join("|");
+
+         val = val.replace(rowData[f.columnName], connectLabel);
+      });
+
+      return val;
+   }
 }
