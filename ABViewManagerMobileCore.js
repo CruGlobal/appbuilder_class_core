@@ -13,6 +13,7 @@ var Views = {};
 [
    require("../platform/mobile/ABMobilePage"),
    require("../platform/mobile/ABMobileView"),
+   require("../platform/mobile/ABMobileViewCustom"),
    require("../platform/mobile/ABMobileViewForm"),
    require("../platform/mobile/ABMobileViewFormButton"),
    require("../platform/mobile/ABMobileViewFormCheckbox"),
