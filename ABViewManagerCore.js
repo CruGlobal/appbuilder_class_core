@@ -29,7 +29,6 @@ var AllViews = [
    require("../platform/views/ABViewLayout"),
    require("../platform/views/ABViewList"),
    require("../platform/views/ABViewMenu"),
-   require("../platform/views/ABViewOrgChart"),
    require("../platform/views/ABViewPage"),
    require("../platform/views/ABViewPDFImporter"),
    require("../platform/views/ABViewPivot"),
@@ -121,8 +120,8 @@ module.exports = class ABViewManagerCore {
             if (!isPlugin(values.key)) {
                console.error(
                   "!! View[" +
-                     values.key +
-                     "] not yet defined.  Have an ABView instead:"
+                  values.key +
+                  "] not yet defined.  Have an ABView instead:"
                );
             }
             return new Views["view"](values, application, parent);
