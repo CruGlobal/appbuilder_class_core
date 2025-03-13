@@ -188,7 +188,10 @@ module.exports = class ABFieldDateTimeCore extends ABFieldDateCore {
          return "";
       }
 
-      return webix.Date.dateToStr(datetimeFormat)(dateObj);
+      if (this.AB.Webix)
+         return this.AB.Webix.Date.dateToStr(datetimeFormat)(dateObj);
+      else
+         return dateObj?.toISOString() ?? "";
    }
 
    getTimeFormat() {
