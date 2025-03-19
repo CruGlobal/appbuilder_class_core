@@ -435,9 +435,7 @@ export default class ABFieldConnectCore extends ABField {
          if (options.forUpdate) {
             colName = datasourceLink.PK();
          } else {
-            colName = indexField
-               ? indexField.columnName
-               : datasourceLink.PK();
+            colName = indexField ? indexField.columnName : datasourceLink.PK();
          }
       }
       // NO CUSTOM INDEX

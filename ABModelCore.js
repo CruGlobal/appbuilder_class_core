@@ -727,6 +727,17 @@ export default class ABModelCore {
             // if (d[c.columnName] == null)
             //  d[c.columnName] = '';
 
+            // Our client side tools need to know that this value is null if it
+            // isn't provided:
+            if (
+               typeof d[relationName] == "undefined" &&
+               typeof d[c.columnName] == "undefined"
+            ) {
+               d[relationName] = null;
+               d[c.columnName] = null;
+               return;
+            }
+
             // if there is no data we can exit now
             if (d[relationName] == null) return;
 

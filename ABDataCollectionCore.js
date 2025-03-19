@@ -1209,7 +1209,7 @@ export default class ABDataCollectionCore extends ABMLClass {
                               (r) => !this.AB.isNil(r)
                            );
                         }
-                        row[colName].push(f.getRelationValue(newData));
+                        row[colName].push(field.getRelationValue(newData));
 
                         if (!Array.isArray(row[relName])) {
                            row[relName] = [row[relName]].filter(
@@ -1218,7 +1218,7 @@ export default class ABDataCollectionCore extends ABMLClass {
                         }
                         row[relName].push(newData);
                      } else {
-                        row[colName] = f.getRelationValue(newData);
+                        row[colName] = field.getRelationValue(newData);
                         row[relName] = newData;
                      }
 
@@ -2957,11 +2957,11 @@ export default class ABDataCollectionCore extends ABMLClass {
 
    parseTreeCollection(data = {}) {
       // TODO all this does is log "is missing?"
-      if (data === {}) {
-         console.log(
-            "Platform.ABDataCollection.parseTreeCollection() missing!"
-         );
-      }
+      // if (false) {
+      //    console.log(
+      //       "Platform.ABDataCollection.parseTreeCollection() missing!"
+      //    );
+      // }
    }
    // parseTreeCollection(data = {}) {
 

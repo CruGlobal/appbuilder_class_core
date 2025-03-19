@@ -30,12 +30,18 @@ import ABObject from "../platform/ABObject";
 
 // const ABObjectExternal = require("../platform/ABObjectExternal");
 import ABObjectExternal from "../platform/ABObjectExternal";
+
 // const ABObjectImport = require("../platform/ABObjectImport");
 import ABObjectImport from "../platform/ABObjectImport";
+
 // const ABObjectApi = require("../platform/ABObjectApi");
 import ABObjectApi from "../platform/ABObjectApi";
+
+import ABObjectApiNetsuite from "../platform/ABObjectApiNetsuite";
+
 // const ABDataCollection = require("../platform/ABDataCollection");
 import ABDataCollection from "../platform/ABDataCollection";
+
 // const ABObjectQuery = require("../platform/ABObjectQuery");
 import ABObjectQuery from "../platform/ABObjectQuery";
 
@@ -144,6 +150,7 @@ class ABFactory extends EventEmitter {
          ABObjectExternal,
          ABObjectImport,
          ABObjectApi,
+         ABObjectApiNetsuite,
          ABObjectQuery,
          ABProcessParticipant,
          // ABRole      // Do we need this anymore?
@@ -715,6 +722,8 @@ class ABFactory extends EventEmitter {
          newObj = new ABObjectExternal(values, this);
       else if (values.isImported == true)
          newObj = new ABObjectImport(values, this);
+      else if (values.isNetsuite == true)
+         newObj = new ABObjectApiNetsuite(values, this);
       else if (values.isAPI == true) newObj = new ABObjectApi(values, this);
       else newObj = new ABObject(values, this);
 
