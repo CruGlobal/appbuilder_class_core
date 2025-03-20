@@ -725,10 +725,11 @@ module.exports = class ABModelCore {
       let connections = myObject.connectFields();
       connections.forEach((connField) => {
          let connHash = {};
+         let relationName = connField.relationName();
          // gather all the connected data for this field
          data.data.forEach((row) => {
-            if (row[connField.relationName()]) {
-               row[connField.relationName()].forEach((r) => {
+            if (row[relationName]) {
+               row[relationName].forEach((r) => {
                   if (!connHash[r.id]) {
                      connHash[r.id] = r;
                   }
@@ -744,13 +745,20 @@ module.exports = class ABModelCore {
          // now reencode the connection data to reference the new _csvID
          data.data.forEach((row) => {
             let ids = [];
-            if (row[connField.relationName()]) {
-               row[connField.relationName()].forEach((r) => {
+            let hasRelationData = false;
+            if (row[relationName]) {
+               hasRelationData = true;
+               row[relationName].forEach((r) => {
                   ids.push(connHash[r.id]._csvID);
                });
             }
-            row[connField.columnName] = ids;
-            delete row[connField.relationName()];
+            // only make an update if it did have relation data
+            if (hasRelationData) {
+               row[connField.columnName] = ids;
+               delete row[relationName];
+            }
+            // we don't use .properties anymore, right?
+            delete row.properties;
          });
 
          let connData = Object.values(connHash);
