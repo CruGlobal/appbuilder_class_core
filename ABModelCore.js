@@ -759,8 +759,14 @@ module.exports = class ABModelCore {
                row[connField.columnName] = JSON.stringify(ids);
                delete row[relationName];
             }
+
             // we don't use .properties anymore, right?
             delete row.properties;
+
+            // make sure embedded translations are stringified.
+            if (row.translations) {
+               row.translations = JSON.stringify(row.translations);
+            }
          });
 
          let connData = Object.values(connHash);
@@ -839,6 +845,11 @@ module.exports = class ABModelCore {
                });
                row[connField.columnName] = ids;
                row[connField.relationName()] = populatedData;
+
+               // if translations are present and they are still a string
+               if (row.translations) {
+                  row.translations = JSON.parse(row.translations);
+               }
             });
 
             // now clear the ._csvID from the data
