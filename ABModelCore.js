@@ -735,14 +735,22 @@ module.exports = class ABModelCore {
       connections.forEach((connField) => {
          let connHash = {};
          let relationName = connField.relationName();
+
          // gather all the connected data for this field
          content.forEach((row) => {
             if (row[relationName]) {
-               row[relationName].forEach((r) => {
+               if (Array.isArray(row[relationName])) {
+                  row[relationName].forEach((r) => {
+                     if (!connHash[r.id]) {
+                        connHash[r.id] = r;
+                     }
+                  });
+               } else {
+                  let r = row[relationName];
                   if (!connHash[r.id]) {
                      connHash[r.id] = r;
                   }
-               });
+               }
             }
          });
 
@@ -757,9 +765,14 @@ module.exports = class ABModelCore {
             let hasRelationData = false;
             if (row[relationName]) {
                hasRelationData = true;
-               row[relationName].forEach((r) => {
+               if (Array.isArray(row[relationName])) {
+                  row[relationName].forEach((r) => {
+                     ids.push(connHash[r.id]._csvID);
+                  });
+               } else {
+                  let r = row[relationName];
                   ids.push(connHash[r.id]._csvID);
-               });
+               }
             }
             // only make an update if it did have relation data
             if (hasRelationData) {
@@ -867,8 +880,13 @@ module.exports = class ABModelCore {
                      populatedData.push(connEntry);
                   }
                });
-               row[connField.columnName] = ids;
-               row[connField.relationName()] = populatedData;
+               if (connField.linkType() == "many") {
+                  row[connField.columnName] = ids;
+                  row[connField.relationName()] = populatedData;
+               } else {
+                  row[connField.columnName] = ids[0];
+                  row[connField.relationName()] = populatedData[0];
+               }
             });
 
             // now clear the ._csvID from the data
