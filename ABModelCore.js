@@ -759,19 +759,25 @@ module.exports = class ABModelCore {
                row[connField.columnName] = JSON.stringify(ids);
                delete row[relationName];
             }
-
-            // we don't use .properties anymore, right?
-            delete row.properties;
-
-            // make sure embedded translations are stringified.
-            if (row.translations) {
-               row.translations = JSON.stringify(row.translations);
-            }
          });
 
          let connData = Object.values(connHash);
          let connDataCsv = this.AB.jsonToCsv(connData);
          packedData.relations[connField.id] = connDataCsv;
+      });
+
+      // final data preparations for csv encoding
+      data.data.forEach((row) => {
+         // client side .normalizeData() should repopulate .id
+         delete row.id;
+
+         // we don't use .properties anymore, right?
+         delete row.properties;
+
+         // make sure embedded translations are stringified.
+         if (row.translations) {
+            row.translations = JSON.stringify(row.translations);
+         }
       });
 
       // now convert the data to CSV
@@ -814,6 +820,14 @@ module.exports = class ABModelCore {
          // @todo: what is the appropriate response here?
       }
       let jsonData = parseResult.data;
+
+      jsonData.forEach((row) => {
+         // if translations are present return them to an object
+         if (row.translations) {
+            row.translations = JSON.parse(row.translations);
+         }
+      });
+
       let connections = myObject.connectFields();
       connections.forEach((connField) => {
          if (data.csv_packed.relations[connField.id]) {
@@ -845,11 +859,6 @@ module.exports = class ABModelCore {
                });
                row[connField.columnName] = ids;
                row[connField.relationName()] = populatedData;
-
-               // if translations are present and they are still a string
-               if (row.translations) {
-                  row.translations = JSON.parse(row.translations);
-               }
             });
 
             // now clear the ._csvID from the data
