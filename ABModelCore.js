@@ -754,7 +754,7 @@ module.exports = class ABModelCore {
             }
             // only make an update if it did have relation data
             if (hasRelationData) {
-               row[connField.columnName] = ids;
+               row[connField.columnName] = JSON.stringify(ids);
                delete row[relationName];
             }
             // we don't use .properties anymore, right?
@@ -817,7 +817,11 @@ module.exports = class ABModelCore {
             jsonData.forEach((row) => {
                let ids = [];
                let populatedData = [];
-               row[connField.columnName].forEach((id) => {
+               let entries = JSON.parse(row[connField.columnName]);
+               if (!Array.isArray(entries)) {
+                  entries = [entries];
+               }
+               entries.forEach((id) => {
                   if (connHash[id]) {
                      let connEntry = connHash[id];
                      ids.push(connField.getRelationValue(connEntry));
