@@ -867,7 +867,20 @@ module.exports = class ABModelCore {
             jsonData.forEach((row) => {
                let ids = [];
                let populatedData = [];
-               let entries = JSON.parse(row[connField.columnName]);
+               let entries = [];
+               try {
+                  entries = JSON.parse(row[connField.columnName]);
+               } catch (e) {
+                  if (row[connField.columnName] == "") {
+                     // not a problem, just no data
+                  } else {
+                     console.error(
+                        "Error parsing JSON data for column: " +
+                           connField.columnName,
+                        e
+                     );
+                  }
+               }
                if (!Array.isArray(entries)) {
                   entries = [entries];
                }
