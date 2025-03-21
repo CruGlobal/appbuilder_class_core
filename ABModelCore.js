@@ -723,13 +723,20 @@ module.exports = class ABModelCore {
       let packedData = { data: "", relations: {} };
       let myObject = this.object;
 
+      let content = data.data;
+      let returnType = "array";
+      if (!Array.isArray(content)) {
+         returnType = "single";
+         content = [content];
+      }
+
       // break out and compact the connected data
       let connections = myObject.connectFields();
       connections.forEach((connField) => {
          let connHash = {};
          let relationName = connField.relationName();
          // gather all the connected data for this field
-         data.data.forEach((row) => {
+         content.forEach((row) => {
             if (row[relationName]) {
                row[relationName].forEach((r) => {
                   if (!connHash[r.id]) {
@@ -745,7 +752,7 @@ module.exports = class ABModelCore {
          });
 
          // now reencode the connection data to reference the new _csvID
-         data.data.forEach((row) => {
+         content.forEach((row) => {
             let ids = [];
             let hasRelationData = false;
             if (row[relationName]) {
@@ -767,7 +774,7 @@ module.exports = class ABModelCore {
       });
 
       // final data preparations for csv encoding
-      data.data.forEach((row) => {
+      content.forEach((row) => {
          // client side .normalizeData() should repopulate .id
          delete row.id;
 
@@ -781,7 +788,8 @@ module.exports = class ABModelCore {
       });
 
       // now convert the data to CSV
-      packedData.data = this.AB.jsonToCsv(data.data);
+      packedData.data = this.AB.jsonToCsv(content);
+      packedData.type = returnType; // single or array
 
       let newData = {};
       Object.keys(data).forEach((key) => {
@@ -814,6 +822,8 @@ module.exports = class ABModelCore {
       let myObject = this.object;
       let parseResult = this.AB.csvToJson(data.csv_packed.data);
       // parseResult = { data: [], errors:[], meta:{}}
+
+      let returnType = data.csv_packed.type;
 
       if (parseResult.errors?.length) {
          console.error("Error parsing CSV data:", parseResult.errors);
@@ -875,6 +885,10 @@ module.exports = class ABModelCore {
          }
       });
       returnData.data = jsonData;
+
+      if (returnType == "single" && Array.isArray(returnData.data)) {
+         returnData.data = returnData.data[0];
+      }
       return returnData;
    }
 
