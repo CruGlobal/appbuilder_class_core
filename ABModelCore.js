@@ -12,6 +12,8 @@
 //    })
 //
 
+// const { isArray } = require("lodash");
+
 module.exports = class ABModelCore {
    constructor(object) {
       // link me to my ABObject
@@ -769,9 +771,14 @@ module.exports = class ABModelCore {
       // now convert the data to CSV
       packedData.data = this.AB.jsonToCsv(data.data);
 
-      data.csv_packed = packedData;
-      delete data.data;
-      return data;
+      let newData = {};
+      Object.keys(data).forEach((key) => {
+         if (key != "data") {
+            newData[key] = data[key];
+         }
+      });
+      newData.csv_packed = packedData;
+      return newData;
    }
 
    csvUnpack(data) {
@@ -841,9 +848,14 @@ module.exports = class ABModelCore {
          }
       });
 
-      data.data = jsonData;
-      delete data.csv_packed;
-      return data;
+      let returnData = {};
+      Object.keys(data).forEach((key) => {
+         if (key != "csv_packed") {
+            returnData[key] = data[key];
+         }
+      });
+      returnData.data = jsonData;
+      return returnData;
    }
 
    normalizeData(data) {

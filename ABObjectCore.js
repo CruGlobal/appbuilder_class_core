@@ -8,6 +8,7 @@
 var ABModel = require("../platform/ABModel");
 var ABMLClass = require("../platform/ABMLClass");
 
+/* eslint-disable-next-line no-undef */
 const L = (...params) => AB.Multilingual.label(...params);
 
 module.exports = class ABObjectCore extends ABMLClass {
