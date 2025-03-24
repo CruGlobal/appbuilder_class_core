@@ -798,6 +798,14 @@ module.exports = class ABModelCore {
          if (row.translations) {
             row.translations = JSON.stringify(row.translations);
          }
+
+         // special case for relations that are empty
+         connections.forEach((connField) => {
+            let relationName = connField.relationName();
+            if (row[relationName] === null) {
+               delete row[relationName];
+            }
+         });
       });
 
       // now convert the data to CSV
@@ -853,6 +861,8 @@ module.exports = class ABModelCore {
 
       let connections = myObject.connectFields();
       connections.forEach((connField) => {
+         let relationName = connField.relationName();
+
          if (data.csv_packed.relations[connField.id]) {
             let connDataParseResult = this.AB.csvToJson(
                data.csv_packed.relations[connField.id]
@@ -874,11 +884,16 @@ module.exports = class ABModelCore {
                   if (row[connField.columnName] == "") {
                      // not a problem, just no data
                   } else {
-                     console.error(
-                        "Error parsing JSON data for column: " +
-                           connField.columnName,
-                        e
-                     );
+                     // this might be a situation on the server where
+                     // row[columnName] has a value, but row[relationName] is empty.
+                     if (typeof row[relationName] == "undefined") {
+                        row[relationName] = null;
+                     }
+                     // console.error(
+                     //    "Error parsing JSON data for column: " +
+                     //       connField.columnName,
+                     //    e
+                     // );
                   }
                }
                if (!Array.isArray(entries)) {
