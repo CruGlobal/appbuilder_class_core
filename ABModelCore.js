@@ -735,6 +735,7 @@ module.exports = class ABModelCore {
       connections.forEach((connField) => {
          let connHash = {};
          let relationName = connField.relationName();
+         let connPK = connField.datasourceLink.PK();
 
          // gather all the connected data for this field
          content.forEach((row) => {
@@ -782,6 +783,16 @@ module.exports = class ABModelCore {
          });
 
          let connData = Object.values(connHash);
+         connData.forEach((c) => {
+            if (c.id == c[connPK]) {
+               delete c.id;
+            }
+
+            // if translations are present return them to an object
+            if (c.translations) {
+               c.translations = JSON.stringify(c.translations);
+            }
+         });
          let connDataCsv = this.AB.jsonToCsv(connData);
          packedData.relations[connField.id] = connDataCsv;
       });
@@ -870,7 +881,11 @@ module.exports = class ABModelCore {
             let connData = connDataParseResult.data;
 
             let connHash = {};
+            let connPK = connField.datasourceLink.PK();
             connData.forEach((c) => {
+               if (!c.id) {
+                  c.id = c[connPK];
+               }
                connHash[c._csvID] = c;
             });
 
