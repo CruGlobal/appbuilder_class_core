@@ -724,6 +724,8 @@ module.exports = class ABModelCore {
       let myObject = this.object;
 
       let content = data.data;
+      content = content.filter((row) => !this.AB.isNil(row));
+
       let returnType = "array";
       if (!Array.isArray(content)) {
          returnType = "single";
