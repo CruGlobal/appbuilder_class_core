@@ -959,6 +959,19 @@ module.exports = class ABModelCore {
          }
       });
 
+      // final pass to clear up stringified relation data
+      jsonData.forEach((row) => {
+         connections.forEach((connField) => {
+            // many connections must be an array, not "[]"
+            if (connField.linkType() == "many") {
+               let val = row[connField.columnName];
+               if (val && typeof val == "string") {
+                  row[connField.columnName] = JSON.parse(val);
+               }
+            }
+         });
+      });
+
       let returnData = {};
       Object.keys(data).forEach((key) => {
          if (key != "csv_packed") {
