@@ -871,16 +871,30 @@ module.exports = class ABModelCore {
 
       if (parseResult.errors?.length) {
          console.error("Error parsing CSV data:", parseResult.errors);
+         console.error("result:");
+         console.error(parseResult.data);
+         console.error("Original CSV data:");
+         console.error(data.csv_packed.data);
          // @todo: what is the appropriate response here?
       }
       let jsonData = parseResult.data;
 
-      let listFields = myObject.fields((f) => f.key == "list");
+      let keyFields = ["list", "boolean", "number"];
+      let parseFields = myObject.fields((f) => keyFields.indexOf(f.key) > -1);
       jsonData.forEach((row) => {
-         // unstringify any list fields
-         listFields.forEach((f) => {
-            if (row[f.columnName]) {
-               row[f.columnName] = JSON.parse(row[f.columnName]);
+         // unstringify any list,bool,number fields
+         parseFields.forEach((f) => {
+            let val = row[f.columnName];
+            if (val && typeof val == "string") {
+               try {
+                  row[f.columnName] = JSON.parse(val);
+               } catch (e) {
+                  console.error(
+                     "Error parsing JSON data for column: " + f.columnName,
+                     val,
+                     e
+                  );
+               }
             }
          });
 
