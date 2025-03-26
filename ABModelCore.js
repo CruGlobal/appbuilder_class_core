@@ -733,8 +733,9 @@ module.exports = class ABModelCore {
 
       // stringify any potential json data
       // starting with List data
-      let listFields = myObject.fields((f) => f.key == "list");
-      listFields.forEach((f) => {
+      let keys = ["list", "json"];
+      let stringifyFields = myObject.fields((f) => keys.indexOf(f.key) > -1);
+      stringifyFields.forEach((f) => {
          content.forEach((row) => {
             if (row[f.columnName]) {
                row[f.columnName] = JSON.stringify(row[f.columnName]);
@@ -879,7 +880,7 @@ module.exports = class ABModelCore {
       }
       let jsonData = parseResult.data;
 
-      let keyFields = ["list", "boolean", "number"];
+      let keyFields = ["list", "boolean", "number", "json"];
       let parseFields = myObject.fields((f) => keyFields.indexOf(f.key) > -1);
       jsonData.forEach((row) => {
          // unstringify any list,bool,number fields
