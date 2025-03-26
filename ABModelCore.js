@@ -724,13 +724,23 @@ module.exports = class ABModelCore {
       let myObject = this.object;
 
       let content = data.data;
-      content = content.filter((row) => !this.AB.isNil(row));
-
       let returnType = "array";
       if (!Array.isArray(content)) {
          returnType = "single";
          content = [content];
       }
+      content = content.filter((row) => !this.AB.isNil(row));
+
+      // stringify any potential json data
+      // starting with List data
+      let listFields = myObject.fields((f) => f.key == "list");
+      listFields.forEach((f) => {
+         content.forEach((row) => {
+            if (row[f.columnName]) {
+               row[f.columnName] = JSON.stringify(row[f.columnName]);
+            }
+         });
+      });
 
       // break out and compact the connected data
       let connections = myObject.connectFields();
@@ -865,7 +875,15 @@ module.exports = class ABModelCore {
       }
       let jsonData = parseResult.data;
 
+      let listFields = myObject.fields((f) => f.key == "list");
       jsonData.forEach((row) => {
+         // unstringify any list fields
+         listFields.forEach((f) => {
+            if (row[f.columnName]) {
+               row[f.columnName] = JSON.parse(row[f.columnName]);
+            }
+         });
+
          // if translations are present return them to an object
          if (row.translations) {
             row.translations = JSON.parse(row.translations);
