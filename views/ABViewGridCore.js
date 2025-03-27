@@ -176,7 +176,9 @@ function settingsDefault(base, field) {
  */
 function settingsDefaultJSON(base, field) {
    try {
-      base[field] = JSON.parse(base[field]);
+      if (typeof base[field] == "string") {
+         base[field] = JSON.parse(base[field]);
+      }
    } catch (e) {
       base[field] = ABViewGridPropertyComponentDefaults[field];
    }
