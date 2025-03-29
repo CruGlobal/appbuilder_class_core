@@ -79,7 +79,7 @@ export default class ABModelCore {
       }
    }
 
-   request(method, params) {
+   request(/* method, params */) {
       console.error(
          "!!! ABModelCore.request() should be overridden by platform."
       );

@@ -327,6 +327,12 @@ export default class FilterComplexCore extends ABComponent {
          case "is_not_empty":
             result = !!value;
             break;
+         case "is_null":
+            result = value == null;
+            break;
+         case "is_not_null":
+            result = value != null;
+            break;
          default:
             result = this.queryFieldValid(value, rule, compareValue);
             break;
