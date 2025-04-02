@@ -1981,8 +1981,10 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
                      });
                      Promise.all(prmsAllRefreshes).then(() => {
                         allAdds.forEach((d) => {
-                           if (!this.__dataCollection.exists(d[PK])) {
-                              this.__dataCollection.add(d);
+                           if (this.isValidData(d)) {
+                              if (!this.__dataCollection.exists(d[PK])) {
+                                 this.__dataCollection.add(d);
+                              }
                            }
                         });
                      });
