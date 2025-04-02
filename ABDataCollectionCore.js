@@ -1958,6 +1958,12 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
                      let prmsAllRefreshes = [];
                      let allAdds = [];
                      (valuesToAdd || []).forEach((v) => {
+                        // NOTE: it would make sense to perform this check here,
+                        // however some of the values in valuesToAdd may not be
+                        // fully populated, and that could effect our filter checks.
+                        // so we will have to pull all possible rows back, and check
+                        // once they are all loaded (and populated).
+                        // if (!this.isValidData(v)) return;
                         let cond = { where: {} };
                         cond.where[PK] = v;
                         // NOTE: we are using the abbreviated condition syntax here.
