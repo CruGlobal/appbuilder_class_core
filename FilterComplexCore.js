@@ -558,20 +558,30 @@ module.exports = class FilterComplexCore extends ABComponent {
 
       let connectedVal = "";
 
+      let linkType = field.linkType();
+
       if (rowData) {
          if (rowData[relationName]) {
-            connectedVal = (
-               (field.indexField
-                  ? rowData[relationName][field.indexField.columnName]
-                  : null) ?? // custom index
-               (field.indexField2
-                  ? rowData[relationName][field.indexField2.columnName]
-                  : null) ?? // custom index 2
-               rowData[relationName].id ??
-               rowData[relationName]
-            )
-               .toString()
-               .toLowerCase();
+            if (linkType == "many") {
+               // lets get an array of connected ids => stringified()
+               connectedVal = JSON.stringify(
+                  getConnectFieldValue(rowData, field).map((i) => i.id || i)
+               );
+            } else {
+               // connectedVal = (
+               //    (field.indexField
+               //       ? rowData[relationName][field.indexField.columnName]
+               //       : null) ?? // custom index
+               //    (field.indexField2
+               //       ? rowData[relationName][field.indexField2.columnName]
+               //       : null) ?? // custom index 2
+               //    rowData[relationName].id ??
+               //    rowData[relationName]
+               // )
+               connectedVal = getConnectFieldValue(rowData, field)
+                  .toString()
+                  .toLowerCase();
+            }
          } else {
             let fieldVal = getFieldVal(rowData, field);
             if (fieldVal != null) {
@@ -601,7 +611,21 @@ module.exports = class FilterComplexCore extends ABComponent {
             ? compareValue.toLowerCase?.()
             : compareValue;
 
-      switch (rule) {
+      // NOTE: if linkType == many, and rule is equals/not_equal,
+      // these will be interpreted as "contains/not_contains"
+      let ruleSafe = rule;
+      if (linkType == "many") {
+         switch (rule) {
+            case "equals":
+               ruleSafe = "contains";
+               break;
+            case "not_equal":
+               ruleSafe = "not_contains";
+               break;
+         }
+      }
+
+      switch (ruleSafe) {
          case "contains":
             return connectedVal.toString().indexOf(compareValueLowercase) > -1;
          case "not_contains":
