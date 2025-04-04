@@ -2296,14 +2296,24 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
       // operation.
       // the actual resolve() should happen in the
       // .processIncomingData() after the  data is processed.
-      return new Promise((resolve, reject) => {
+      const checkResolve = async () => {
+         if (this._pendingLoadDataResolve == null) return;
+         await new Promise((resolve) => {
+            this.once("loadDataFnResolve", resolve);
+         });
+         await checkResolve();
+      };
+      await new Promise(async (resolve, reject) => {
+         await checkResolve();
          this._pendingLoadDataResolve = {
             resolve: resolve,
             reject: reject,
          };
 
          this.platformFind(model, cond).catch((err) => {
-            reject(err);
+            this._pendingLoadDataResolve.reject(err);
+            this._pendingLoadDataResolve = null;
+            this.emit("loadDataFnResolve");
          });
       });
    }
@@ -2445,6 +2455,7 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
 
                // after we call .resolve() stop tracking this:
                this._pendingLoadDataResolve = null;
+               this.emit("loadDataFnResolve");
             }
 
             // If dc set load all, then it will not trigger .loadData in dc at
