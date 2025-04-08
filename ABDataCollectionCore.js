@@ -1951,24 +1951,43 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
 
                      // then we have to ask for the values we need to add:
                      valuesToAdd = Object.keys(valuesToAdd); // convert to []
-                     if (valuesToAdd.length > 0) {
+                     // NOTE: .staleRefresh() is designed to handle a single requst
+                     // that will be compiled with other requests to be more efficient
+                     // so we need to make 1 .staleRefresh() at a time and then
+                     // compile those results into our data collection.
+                     let prmsAllRefreshes = [];
+                     let allAdds = [];
+                     (valuesToAdd || []).forEach((v) => {
                         let cond = { where: {} };
-                        cond.where[PK] = valuesToAdd;
+                        cond.where[PK] = v;
                         // NOTE: we are using the abbreviated condition syntax here.
 
                         // NOTE: staleRefresh() has some buffering capabilities
                         // that combine multiple calls into 1 more efficient call:
-                        this.model.staleRefresh(cond).then((res) => {
-                           // check to make sure there is data to work with
-                           if (Array.isArray(res.data) && res.data.length) {
-                              res.data.forEach((d) => {
-                                 if (!this.__dataCollection.exists(d[PK])) {
-                                    this.__dataCollection.add(d);
+                        prmsAllRefreshes.push(
+                           this.model.staleRefresh(cond).then((res) => {
+                              // check to make sure there is data to work with
+                              if (Array.isArray(res.data) && res.data.length) {
+                                 res.data.forEach((d) => {
+                                    allAdds.push(d);
+                                 });
+                              } else {
+                                 if (res.data) {
+                                    allAdds.push(res.data);
                                  }
-                              });
+                              }
+                           })
+                        );
+                     });
+                     Promise.all(prmsAllRefreshes).then(() => {
+                        allAdds.forEach((d) => {
+                           if (this.isValidData(d)) {
+                              if (!this.__dataCollection.exists(d[PK])) {
+                                 this.__dataCollection.add(d);
+                              }
                            }
                         });
-                     }
+                     });
                   }
 
                   return;
