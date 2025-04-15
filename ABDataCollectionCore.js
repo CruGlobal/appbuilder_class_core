@@ -71,6 +71,15 @@ function queueOperation(fn, timeout = 20) {
    }
 }
 
+var TestingData = {
+   k_ids: {
+      /* key : [ids] */
+   },
+   id_k: {
+      /* id : key */
+   },
+};
+
 module.exports = class ABDataCollectionCore extends ABMLClass {
    constructor(attributes, AB) {
       super(["label"], AB);
@@ -2396,6 +2405,45 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
     *        }
     */
    processIncomingData(data) {
+      console.log("processIncomingData", data);
+      let key = `${data.offset}-${data.limit}`;
+      let ids = [];
+      let idsExist = [];
+      (data.data || []).forEach((d) => {
+         ids.push(d.id);
+         if (this.__dataCollection.exists(d.id)) {
+            idsExist.push(d.id);
+         }
+      });
+
+      // store the key => ids
+      if (!TestingData.k_ids) TestingData.k_ids = {};
+      if (!TestingData.k_ids[key]) {
+         TestingData.k_ids[key] = ids;
+         ids.forEach((id) => {
+            if (!TestingData.id_k[id]) TestingData.id_k[id] = [];
+            TestingData.id_k[id].push(key);
+         });
+      } else {
+         console.log(`${key} already exists`);
+      }
+
+      if (idsExist.length > 0) {
+         // remove ids from TestingData
+         idsExist.forEach((id) => {
+            if (TestingData.id_k[id]) {
+               TestingData.id_k[id].forEach((k) => {
+                  console.log(
+                     `${id} was already found in these keys: ${TestingData.id_k[
+                        id
+                     ].join(",")}`
+                  );
+               });
+            }
+         });
+         console.log(TestingData);
+      }
+
       return Promise.resolve().then(() => {
          // store total count
          this.__totalCount = data.total_count;
