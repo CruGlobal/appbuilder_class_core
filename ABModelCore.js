@@ -907,12 +907,15 @@ module.exports = class ABModelCore {
       let returnType = data.csv_packed.type;
 
       if (parseResult.errors?.length) {
-         console.error("Error parsing CSV data:", parseResult.errors);
-         console.error("result:");
-         console.error(parseResult.data);
-         console.error("Original CSV data:");
-         console.error(data.csv_packed.data);
-         // @todo: what is the appropriate response here?
+         // ignore common error when .data is ""
+         if (data.csv_packed.data !== "") {
+            console.error("Error parsing CSV data:", parseResult.errors);
+            console.error("Original CSV data:");
+            console.error(data.csv_packed.data);
+            console.error("result:");
+            console.error(parseResult.data);
+            // @todo: what is the appropriate response here?
+         }
       }
       let jsonData = parseResult.data;
 
