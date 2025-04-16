@@ -914,7 +914,6 @@ module.exports = class ABModelCore {
             console.error(data.csv_packed.data);
             console.error("result:");
             console.error(parseResult.data);
-            // @todo: what is the appropriate response here?
          }
       }
       let jsonData = parseResult.data;
