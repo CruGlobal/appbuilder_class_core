@@ -27,18 +27,31 @@ var AllProcessElements = [
    await import("../../platform/process/tasks/ABProcessGatewayExclusive"),
    await import("../../platform/process/tasks/ABProcessTaskEmail"),
    await import("../../platform/process/tasks/ABProcessTaskService"),
-   await import("../../platform/process/tasks/ABProcessTaskServiceAccountingBatchProcessing"),
-   await import("../../platform/process/tasks/ABProcessTaskServiceAccountingFPClose"),
-   await import("../../platform/process/tasks/ABProcessTaskServiceAccountingFPYearClose"),
-   await import("../../platform/process/tasks/ABProcessTaskServiceAccountingJEArchive"),
+   await import(
+      "../../platform/process/tasks/ABProcessTaskServiceAccountingBatchProcessing"
+   ),
+   await import(
+      "../../platform/process/tasks/ABProcessTaskServiceAccountingFPClose"
+   ),
+   await import(
+      "../../platform/process/tasks/ABProcessTaskServiceAccountingFPYearClose"
+   ),
+   await import(
+      "../../platform/process/tasks/ABProcessTaskServiceAccountingJEArchive"
+   ),
    await import("../../platform/process/tasks/ABProcessTaskServiceCalculate"),
-   await import("../../platform/process/tasks/ABProcessTaskServiceInsertRecord"),
+   await import(
+      "../../platform/process/tasks/ABProcessTaskServiceInsertRecord"
+   ),
    await import("../../platform/process/tasks/ABProcessTaskServiceQuery"),
-   await import("../../platform/process/tasks/ABProcessTaskServiceGetResetPasswordUrl"),
+   await import(
+      "../../platform/process/tasks/ABProcessTaskServiceGetResetPasswordUrl"
+   ),
    await import("../../platform/process/tasks/ABProcessTaskSubProcess"),
    await import("../../platform/process/tasks/ABProcessTaskUser"),
    await import("../../platform/process/tasks/ABProcessTaskUserApproval"),
    await import("../../platform/process/tasks/ABProcessTaskUserExternal"),
+   await import("../../platform/process/tasks/ABProcessTaskUserForm"),
    await import("../../platform/process/tasks/ABProcessTrigger"),
    await import("../../platform/process/tasks/ABProcessTriggerLifecycle"),
    await import("../../platform/process/tasks/ABProcessTriggerTimer"),
