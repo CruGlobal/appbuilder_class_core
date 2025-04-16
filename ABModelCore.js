@@ -696,6 +696,13 @@ module.exports = class ABModelCore {
       // return this.request("put", params);
    }
 
+   /**
+    * @method isCsvPacked
+    * check if the data is packed in a csv format
+    * @param {json} data  the json condition statement.
+    * @return {boolean} true if the data is packed in a csv format
+    *                   false if the data is not packed in a csv format
+    */
    isCsvPacked(data) {
       if (data.csv_packed) {
          return true;
@@ -703,6 +710,28 @@ module.exports = class ABModelCore {
       return false;
    }
 
+   /**
+    * @method csvPack
+    * pack the data into a csv format
+    * @param {json} data
+    *               The original data format.
+    *              {
+    *                data: [{obj1}, {obj2}, ... {objN}],
+    *                total_bytes:xx,
+    *              }
+    * @return {json} the csv packed data
+    *                {
+    *                  csv_packed:{
+    *                    data: "<csv data>",
+    *                    relations: {
+    *                      {connectionID}: "<csv data>",
+    *                      {connectionID}: "<csv data>",
+    *                      ...
+    *                    },
+    *                  },
+    *                  total_bytes:xx,
+    *                }
+    */
    csvPack(data) {
       // data should be the original json data packet we want to send
       // {
@@ -846,6 +875,13 @@ module.exports = class ABModelCore {
       return newData;
    }
 
+   /**
+    * @method csvUnpack
+    * unpack the data from our csv format
+    * @param {json} data
+    *              The csv packed data format.
+    * @return {json} the unpacked data
+    */
    csvUnpack(data) {
       // data should be a data packet returned from the server
       // {
