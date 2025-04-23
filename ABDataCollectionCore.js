@@ -1840,7 +1840,8 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
                // NOTE: we can clear data here to update UI display, then data will be fetched when webix.dataFeed event
                if (
                   !this.settings?.loadAll &&
-                  currentCursor?.id != linkDC.previousCursorId
+                  linkDC.previousCursorId != null &&
+                  linkDC.previousCursorId != currentCursor?.id
                )
                   this.clearAll();
 
