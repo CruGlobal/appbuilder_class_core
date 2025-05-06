@@ -108,6 +108,8 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
       // {ABModel}
       // An instance of the ABModel used for this DataCollection to
       // access data on the server.
+
+      this._pendingLoadDataResolves = [];
    }
 
    /**
@@ -2396,10 +2398,10 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
       // the actual resolve() should happen in the
       // .processIncomingData() after the  data is processed.
       return new Promise((resolve, reject) => {
-         this._pendingLoadDataResolve = {
+         this._pendingLoadDataResolves.push({
             resolve: resolve,
             reject: reject,
-         };
+         });
 
          this.platformFind(model, cond).catch((err) => {
             reject(err);
@@ -2539,12 +2541,8 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
             }
 
             // now we close out our .loadData() promise.resolve() :
-            if (this._pendingLoadDataResolve) {
-               this._pendingLoadDataResolve.resolve();
-
-               // after we call .resolve() stop tracking this:
-               this._pendingLoadDataResolve = null;
-            }
+            // after we call .resolve() stop tracking this:
+            this._pendingLoadDataResolves.shift()?.resolve();
 
             // If dc set load all, then it will not trigger .loadData in dc at
             // .onAfterLoad event
