@@ -109,7 +109,9 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
       // An instance of the ABModel used for this DataCollection to
       // access data on the server.
 
-      this._pendingLoadDataPromises = [];
+      this._pendingLoadDataResolves = {
+         /* jobID : {pendingResolve } */
+      };
    }
 
    /**
@@ -2139,7 +2141,6 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
    //    return null;
    // }
 
-<<<<<<< HEAD
    /**
     * @method getWhereClause()
     * Return the current where condition for the datacollection.
@@ -2168,52 +2169,58 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
       const __additionalWheres = {
          glue: "and",
          rules: [],
-=======
-   loadData(start, limit) {
-      // mark data status is initializing
-      if (this._dataStatus == this.dataStatusFlag.notInitial) {
-         this._dataStatus = this.dataStatusFlag.initializing;
-         this.emit("initializingData", {});
-      }
-
-      var obj = this.datasource;
-      if (obj == null) {
-         this._dataStatus = this.dataStatusFlag.initialized;
-         return;
-      }
-
-      var model = obj.model();
-      if (model == null) {
-         this._dataStatus = this.dataStatusFlag.initialized;
-         return;
-      }
-
-      const pendingLoadDataPromise = {
-         promise: null,
-         resolve: null,
->>>>>>> 9373ccd (Fix loadData to process multiple pending requests in order)
       };
-      pendingLoadDataPromise.promise = new Promise((resolve, reject) => {
-         pendingLoadDataPromise.resolve = resolve;
-         const previousPendingLoadDataPromise =
-            this._pendingLoadDataPromises[
-               this._pendingLoadDataPromises.length - 1
-            ];
-         this._pendingLoadDataPromises.push(pendingLoadDataPromise);
-         (async () => {
-            try {
-               previousPendingLoadDataPromise &&
-                  (await previousPendingLoadDataPromise.promise);
 
-               // pull the defined sort values
-               var sorts = this.settings.objectWorkspace.sortFields || [];
+      // add the filterCond if there are rules to add
+      if (this.__filterCond?.rules?.length > 0) {
+         __additionalWheres.rules.push(this.__filterCond);
+      }
 
-               // pull filter conditions
-               let wheres = this.AB.cloneDeep(
-                  this.settings.objectWorkspace.filterConditions ?? {}
-               );
+      // Filter by a selected cursor of a link DC
+      let linkRule = this.ruleLinkedData();
+      if (!this.settings.loadAll && linkRule) {
+         __additionalWheres.rules.push(linkRule);
+      }
+      // pull data rows following the follow data collection
+      else if (this.datacollectionFollow) {
+         const followCursor = this.datacollectionFollow.getCursor();
+         // store the PK as a variable
+         let PK = this.datasource.PK();
+         // if the datacollection we are following is a query
+         // add "BASE_OBJECT." to the PK so we can select the
+         // right value to report the cursor change to
+         if (this.datacollectionFollow.settings.isQuery) {
+            PK = "BASE_OBJECT." + PK;
+         }
+         if (followCursor) {
+            start = 0;
+            limit = null;
+            wheres = {
+               glue: "and",
+               rules: [
+                  {
+                     key: this.datasource.PK(),
+                     rule: "equals",
+                     value: followCursor[PK],
+                  },
+               ],
+            };
+         }
+         // Set no return rows
+         else {
+            wheres = {
+               glue: "and",
+               rules: [
+                  {
+                     key: this.datasource.PK(),
+                     rule: "equals",
+                     value: "NO RESULT ROW",
+                  },
+               ],
+            };
+         }
+      }
 
-<<<<<<< HEAD
       // Combine setting & program filters
       if (__additionalWheres.rules.length) {
          if (wheres.rules.length) {
@@ -2379,154 +2386,28 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
                const dv = this.AB.datacollectionByID(rule.value);
                if (dv) {
                   dcFilters.push(this.waitForDataCollectionToInitialize(dv));
-=======
-               // if we pass new wheres with a reload use them instead
-               if (this.__reloadWheres) {
-                  wheres = this.__reloadWheres;
->>>>>>> 9373ccd (Fix loadData to process multiple pending requests in order)
                }
-               wheres.glue = wheres.glue || "and";
-               wheres.rules = wheres.rules || [];
-               const __additionalWheres = {
-                  glue: "and",
-                  rules: [],
-               };
-
-               // add the filterCond if there are rules to add
-               if (this.__filterCond?.rules?.length > 0) {
-                  __additionalWheres.rules.push(this.__filterCond);
-               }
-
-               // Filter by a selected cursor of a link DC
-               let linkRule = this.ruleLinkedData();
-               if (!this.settings.loadAll && linkRule) {
-                  __additionalWheres.rules.push(linkRule);
-               }
-
-               // pull data rows following the follow data collection
-               else if (this.datacollectionFollow) {
-                  const followCursor = this.datacollectionFollow.getCursor();
-
-                  // store the PK as a variable
-                  let PK = this.datasource.PK();
-
-                  // if the datacollection we are following is a query
-                  // add "BASE_OBJECT." to the PK so we can select the
-                  // right value to report the cursor change to
-                  if (this.datacollectionFollow.settings.isQuery) {
-                     PK = "BASE_OBJECT." + PK;
-                  }
-                  if (followCursor) {
-                     start = 0;
-                     limit = null;
-                     wheres = {
-                        glue: "and",
-                        rules: [
-                           {
-                              key: this.datasource.PK(),
-                              rule: "equals",
-                              value: followCursor[PK],
-                           },
-                        ],
-                     };
-                  }
-
-                  // Set no return rows
-                  else {
-                     wheres = {
-                        glue: "and",
-                        rules: [
-                           {
-                              key: this.datasource.PK(),
-                              rule: "equals",
-                              value: "NO RESULT ROW",
-                           },
-                        ],
-                     };
-                  }
-               }
-
-               // Combine setting & program filters
-               if (__additionalWheres.rules.length) {
-                  if (wheres.rules.length) {
-                     __additionalWheres.rules.unshift(wheres);
-                  }
-                  wheres = __additionalWheres;
-               }
-
-               // remove any null in the .rules
-               // if (wheres?.rules?.filter) wheres.rules = wheres.rules.filter((r) => r);
-               wheres = obj.whereCleanUp(wheres);
-
-               // set query condition
-               var cond = {
-                  where: wheres || {},
-                  // limit: limit || 20,
-                  skip: start || 0,
-                  sort: sorts,
-                  populate: this.shouldPopulate,
-               };
-
-               //// NOTE: we no longer set a default limit on loadData() but
-               //// require the platform.loadData() to pass in a default limit.
-               if (limit != null) {
-                  cond.limit = limit;
-               }
-
-               // if settings specify loadAll, then remove the limit
-               if (this.settings.loadAll && !this.isCursorFollow) {
-                  delete cond.limit;
-               }
-
-               //
-               // Step 1: make sure any DataCollections we are linked to are
-               // initialized first.  Then proceed with our initialization.
-               //
-               const parentDc =
-                  this.datacollectionLink ?? this.datacollectionFollow;
-
-               // If we are linked to another datacollection then wait for it
-               if (parentDc) {
-                  await this.waitForDataCollectionToInitialize(parentDc);
-               }
-
-               //
-               // Step 2: if we have any filter rules that depend on other DataCollections,
-               // then wait for them to be initialized first.
-               // eg: "(not_)in_data_collection" rule filters
-               if (wheres?.rules?.length) {
-                  const dcFilters = [];
-                  wheres.rules.forEach((rule) => {
-                     // if this collection is filtered by data collections we need to load them in case we need to validate from them later
-                     if (
-                        rule.rule == "in_data_collection" ||
-                        rule.rule == "not_in_data_collection"
-                     ) {
-                        const dv = this.AB.datacollectionByID(rule.value);
-                        if (dv) {
-                           dcFilters.push(
-                              this.waitForDataCollectionToInitialize(dv)
-                           );
-                        }
-                     }
-                  });
-                  await Promise.all(dcFilters);
-               }
-
-               //
-               // Step 3: pull data to data collection
-               // we will keep track of the resolve, reject for this
-               // operation.
-               // the actual resolve() should happen in the
-               // .processIncomingData() after the  data is processed.
-               await this.platformFind(model, cond);
-            } catch (err) {
-               this._pendingLoadDataPromises.shift();
-               reject(err);
             }
-         })();
+         });
+
+         await Promise.all(dcFilters);
+      }
+
+      //
+      // Step 3: pull data to data collection
+      // we will keep track of the resolve, reject for this
+      // operation.
+      // the actual resolve() should happen in the
+      // .processIncomingData() after the  data is processed.
+      return new Promise((resolve, reject) => {
+         const jobID = this.AB.jobID();
+         cond.jobID = jobID;
+         this._pendingLoadDataResolves[jobID] = { resolve, reject };
+         this.platformFind(model, cond).catch((err) => {
+            delete this._pendingLoadDataResolves[jobID];
+            reject(err);
+         });
       });
-      return pendingLoadDataPromise.promise;
    }
 
    platformFind(model, cond) {
@@ -2661,8 +2542,8 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
             }
 
             // now we close out our .loadData() promise.resolve() :
-            // after we call .resolve() stop tracking this:
-            this._pendingLoadDataPromises.shift()?.resolve();
+            this._pendingLoadDataResolves[data.jobID].resolve();
+            delete this._pendingLoadDataResolves[data.jobID];
 
             // If dc set load all, then it will not trigger .loadData in dc at
             // .onAfterLoad event
@@ -2744,14 +2625,7 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
 
          // then create a new timeout to delete current timeout, clear data
          // and load new
-         this.reloadTimer = setTimeout(async () => {
-            const latestPendingLoadDataPromise =
-               this._pendingLoadDataPromises[
-                  this._pendingLoadDataPromises.length - 1
-               ];
-            latestPendingLoadDataPromise &&
-               (await latestPendingLoadDataPromise.promise);
-
+         this.reloadTimer = setTimeout(() => {
             // clear the data from the dataCollection,
             this.clearAll();
             // then loads new data from the server
