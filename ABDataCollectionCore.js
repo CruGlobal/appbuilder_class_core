@@ -1562,6 +1562,19 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
                      }
                   });
 
+                  // update values of Formula fields
+                  obj.fields(
+                     (fld) =>
+                        fld &&
+                        fld.key == "formula" &&
+                        connectedFields.filter(
+                           (conFld) => conFld.id == fld.settings.field
+                        ).length > 0
+                  ).forEach((formulaField) => {
+                     updateItemData[formulaField.columnName] =
+                        formulaField.format(updateItemData, true);
+                  });
+
                   // If this item needs to update
                   // meaning there is > 1 key in the object (we always have .id)
                   if (Object.keys(updateItemData).length > 1) {
