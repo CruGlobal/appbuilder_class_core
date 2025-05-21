@@ -967,7 +967,10 @@ module.exports = class ABModelCore {
                let populatedData = [];
                let entries = [];
                try {
-                  entries = JSON.parse(row[connField.columnName]);
+                  // ok, we know this is a possibility, so just skip it
+                  if (row[connField.columnName] !== "") {
+                     entries = JSON.parse(row[connField.columnName]);
+                  }
                } catch (e) {
                   if (row[connField.columnName] == "") {
                      // not a problem, just no data
