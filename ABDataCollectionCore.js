@@ -1402,6 +1402,12 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
 
                      this.__dataCollection.remove(id);
 
+                     // NOTE: Preserve the current cursor position after item removal.
+                     // Webix v.10.1 automatically clears the cursor when the selected item is removed from the collection.
+                     if (currData && currData.id != id) {
+                        this.__dataCollection.setCursor(currData.id);
+                     }
+
                      // TODO: update tree list
                      // if (this.__treeCollection) {
                      //  this.__treeCollection.remove(id);
