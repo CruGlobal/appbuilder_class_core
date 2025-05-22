@@ -482,7 +482,7 @@ export default class ABDataCollectionCore extends ABMLClass {
    }
 
    dataInitialized() {
-      this.dataStatus = this.dataStatusFlag.initialized;
+      this._dataStatus = this.dataStatusFlag.initialized;
    }
 
    ///
@@ -718,7 +718,11 @@ export default class ABDataCollectionCore extends ABMLClass {
                // if (rowId) {
                this.__dataCollection.setCursor(rowId || null);
 
-               if (this.__dataCollection.data.count() == 0) {
+               // NOTE: differnece between ab_platform_web and ab_platform_pwa
+               if (
+                  this.__dataCollection.data?.count?.() == 0 ||
+                  this.__dataCollection.data?.length == 0
+               ) {
                   this.emit("collectionEmpty", {});
                }
 
@@ -2253,13 +2257,13 @@ export default class ABDataCollectionCore extends ABMLClass {
 
       var obj = this.datasource;
       if (obj == null) {
-         this._dataStatus = this.dataStatusFlag.initialized;
+         this.dataInitialized();
          return Promise.resolve([]);
       }
 
       var model = obj.model();
       if (model == null) {
-         this._dataStatus = this.dataStatusFlag.initialized;
+         this.dataInitialized();
          return Promise.resolve([]);
       }
 
@@ -2569,7 +2573,7 @@ export default class ABDataCollectionCore extends ABMLClass {
 
             // mark initialized data
             if (this._dataStatus != this.dataStatusFlag.initialized) {
-               this._dataStatus = this.dataStatusFlag.initialized;
+               this.dataInitialized();
                this.emit("initializedData", {});
             }
          }, 100);
