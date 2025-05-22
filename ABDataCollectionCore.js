@@ -477,6 +477,14 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
       return this._dataStatus;
    }
 
+   get isDataInitialized() {
+      return this.dataStatus == this.dataStatusFlag.initialized;
+   }
+
+   dataInitialized() {
+      this._dataStatus = this.dataStatusFlag.initialized;
+   }
+
    ///
    /// Cursor
    ///
@@ -710,7 +718,11 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
                // if (rowId) {
                this.__dataCollection.setCursor(rowId || null);
 
-               if (this.__dataCollection.data.count() == 0) {
+               // NOTE: differnece between ab_platform_web and ab_platform_pwa
+               if (
+                  this.__dataCollection.data?.count?.() == 0 ||
+                  this.__dataCollection.data?.length == 0
+               ) {
                   this.emit("collectionEmpty", {});
                }
 
