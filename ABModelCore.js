@@ -694,6 +694,13 @@ export default class ABModelCore {
       // return this.request("put", params);
    }
 
+   /**
+    * @method isCsvPacked
+    * check if the data is packed in a csv format
+    * @param {json} data  the json condition statement.
+    * @return {boolean} true if the data is packed in a csv format
+    *                   false if the data is not packed in a csv format
+    */
    isCsvPacked(data) {
       if (data.csv_packed) {
          return true;
@@ -701,6 +708,28 @@ export default class ABModelCore {
       return false;
    }
 
+   /**
+    * @method csvPack
+    * pack the data into a csv format
+    * @param {json} data
+    *               The original data format.
+    *              {
+    *                data: [{obj1}, {obj2}, ... {objN}],
+    *                total_bytes:xx,
+    *              }
+    * @return {json} the csv packed data
+    *                {
+    *                  csv_packed:{
+    *                    data: "<csv data>",
+    *                    relations: {
+    *                      {connectionID}: "<csv data>",
+    *                      {connectionID}: "<csv data>",
+    *                      ...
+    *                    },
+    *                  },
+    *                  total_bytes:xx,
+    *                }
+    */
    csvPack(data) {
       // data should be the original json data packet we want to send
       // {
@@ -734,11 +763,12 @@ export default class ABModelCore {
       let keys = ["list", "json"];
       let stringifyFields = myObject.fields((f) => keys.indexOf(f.key) > -1);
       stringifyFields.forEach((f) => {
-         content.forEach((row) => {
+         for (let I = 0; I < content.length; I++) {
+            let row = content[I];
             if (row[f.columnName]) {
                row[f.columnName] = JSON.stringify(row[f.columnName]);
             }
-         });
+         }
       });
 
       // break out and compact the connected data
@@ -749,7 +779,8 @@ export default class ABModelCore {
          let connPK = connField.datasourceLink.PK();
 
          // gather all the connected data for this field
-         content.forEach((row) => {
+         for (let I = 0; I < content.length; I++) {
+            let row = content[I];
             if (row[relationName]) {
                if (Array.isArray(row[relationName])) {
                   row[relationName].forEach((r) => {
@@ -764,7 +795,7 @@ export default class ABModelCore {
                   }
                }
             }
-         });
+         }
 
          // assign a smaller id value
          Object.keys(connHash).forEach((id, indx) => {
@@ -772,7 +803,8 @@ export default class ABModelCore {
          });
 
          // now reencode the connection data to reference the new _csvID
-         content.forEach((row) => {
+         for (let I = 0; I < content.length; I++) {
+            let row = content[I];
             let ids = [];
             let hasRelationData = false;
             if (row[relationName]) {
@@ -791,7 +823,7 @@ export default class ABModelCore {
                row[connField.columnName] = JSON.stringify(ids);
                delete row[relationName];
             }
-         });
+         }
 
          let connData = Object.values(connHash);
          connData.forEach((c) => {
@@ -809,7 +841,8 @@ export default class ABModelCore {
       });
 
       // final data preparations for csv encoding
-      content.forEach((row) => {
+      for (let I = 0; I < content.length; I++) {
+         let row = content[I];
          // client side .normalizeData() should repopulate .id
          delete row.id;
 
@@ -828,7 +861,7 @@ export default class ABModelCore {
                delete row[relationName];
             }
          });
-      });
+      }
 
       // now convert the data to CSV
       packedData.data = this.AB.jsonToCsv(content);
@@ -844,6 +877,13 @@ export default class ABModelCore {
       return newData;
    }
 
+   /**
+    * @method csvUnpack
+    * unpack the data from our csv format
+    * @param {json} data
+    *              The csv packed data format.
+    * @return {json} the unpacked data
+    */
    csvUnpack(data) {
       // data should be a data packet returned from the server
       // {
@@ -869,12 +909,14 @@ export default class ABModelCore {
       let returnType = data.csv_packed.type;
 
       if (parseResult.errors?.length) {
-         console.error("Error parsing CSV data:", parseResult.errors);
-         console.error("result:");
-         console.error(parseResult.data);
-         console.error("Original CSV data:");
-         console.error(data.csv_packed.data);
-         // @todo: what is the appropriate response here?
+         // ignore common error when .data is ""
+         if (data.csv_packed.data !== "") {
+            console.error("Error parsing CSV data:", parseResult.errors);
+            console.error("Original CSV data:");
+            console.error(data.csv_packed.data);
+            console.error("result:");
+            console.error(parseResult.data);
+         }
       }
       let jsonData = parseResult.data;
 
@@ -927,7 +969,10 @@ export default class ABModelCore {
                let populatedData = [];
                let entries = [];
                try {
-                  entries = JSON.parse(row[connField.columnName]);
+                  // ok, we know this is a possibility, so just skip it
+                  if (row[connField.columnName] !== "") {
+                     entries = JSON.parse(row[connField.columnName]);
+                  }
                } catch (e) {
                   if (row[connField.columnName] == "") {
                      // not a problem, just no data
