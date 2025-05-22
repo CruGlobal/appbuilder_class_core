@@ -2542,8 +2542,10 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
             }
 
             // now we close out our .loadData() promise.resolve() :
-            this._pendingLoadDataResolves[data.jobID].resolve();
-            delete this._pendingLoadDataResolves[data.jobID];
+            if (data.jobID) { 
+               this._pendingLoadDataResolves[data.jobID].resolve();
+               delete this._pendingLoadDataResolves[data.jobID];
+            }
 
             // If dc set load all, then it will not trigger .loadData in dc at
             // .onAfterLoad event
