@@ -2237,6 +2237,31 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
          wheres = __additionalWheres;
       }
 
+      // Handle conditions that have in_data_collection
+      // if we have a linked data collection, then we need to add the
+      let patch = (rule) => {
+         // value should be the ID reference to the cond DC
+         let condDC = this.AB.datacollectionByID(rule.value);
+         if (condDC) {
+            let [cond, s, l] = condDC.getWhereClause(0, 0);
+            if (cond) {
+               rule.linkCond = cond;
+            }
+         }
+      };
+      function searchCond(cond) {
+         if (cond.rules) {
+            cond.rules.forEach((r) => {
+               searchCond(r);
+            });
+            return;
+         }
+         if (cond.rule.indexOf("in_data_collection") > -1) {
+            patch(cond);
+         }
+      }
+      searchCond(wheres);
+
       // remove any null in the .rules
       // if (wheres?.rules?.filter) wheres.rules = wheres.rules.filter((r) => r);
       wheres = this.datasource.whereCleanUp(wheres);
