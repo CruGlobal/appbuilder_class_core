@@ -828,8 +828,9 @@ module.exports = class ABModelCore {
          }
 
          let connData = Object.values(connHash);
+         const isPKID = connPK === "id";
          connData.forEach((c) => {
-            if (c.id == c[connPK]) {
+            if (!isPKID && c.id == c[connPK]) {
                delete c.id;
             }
 
@@ -843,10 +844,11 @@ module.exports = class ABModelCore {
       });
 
       // final data preparations for csv encoding
+      const isPKID = myObject.PK();
       for (let I = 0; I < content.length; I++) {
          let row = content[I];
          // client side .normalizeData() should repopulate .id
-         delete row.id;
+         !isPKID && delete row.id;
 
          // we don't use .properties anymore, right?
          delete row.properties;
