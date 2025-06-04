@@ -8,6 +8,8 @@
 // const _ = require("lodash");
 // const uuidv4 = require("uuid");
 
+const ABClassManager = require("../platform/ABClassManager");
+
 const ABApplication = require("../platform/ABApplication");
 const ABApplicationMobile = require("../platform/ABApplicationMobile");
 const ABDefinition = require("../platform/ABDefinition");
@@ -96,6 +98,9 @@ class ABFactory extends EventEmitter {
 
       this._allDatacollections = [];
       // {array} of all the ABDataCollection(s) in our site.
+
+      this.ClassManager = ABClassManager;
+      // {ClassManager} the single source for our Class Libraries.
 
       //
       // Class References
@@ -275,6 +280,10 @@ class ABFactory extends EventEmitter {
    }
 
    init() {
+      // BEFORE Definitions are loaded,
+      // make sure any local Plugins are loaded.
+      this.ClassManager.registerLocalPlugins(this.pluginAPI());
+
       let allDefinitions = Object.keys(this._definitions).map(
          (k) => this._definitions[k]
       );
@@ -679,13 +688,20 @@ class ABFactory extends EventEmitter {
    objectNew(values) {
       var newObj = null;
 
-      if (values.isExternal == true)
+      if (values.plugin_key) {
+         // If this is from a plugin, create it from ClassManager
+         newObj = this.ClassManager.createObject(
+            values.plugin_key,
+            values,
+            this
+         );
+      } else if (values.isExternal == true)
          newObj = new ABObjectExternal(values, this);
       else if (values.isImported == true)
          newObj = new ABObjectImport(values, this);
-      else if (values.isNetsuite == true)
+      else if (values.isNetsuite == true) {
          newObj = new ABObjectApiNetsuite(values, this);
-      else if (values.isAPI == true) newObj = new ABObjectApi(values, this);
+      } else if (values.isAPI == true) newObj = new ABObjectApi(values, this);
       else newObj = new ABObject(values, this);
 
       /*
@@ -741,6 +757,20 @@ class ABFactory extends EventEmitter {
 
    objectSecret() {
       return this.objectByID("db5b3b26-5300-4c92-bc73-8ce4f4696992");
+   }
+
+   //
+   // Plugin
+   //
+   pluginAPI() {
+      let api = this.ClassManager.getPluginAPI();
+      api.AB = this;
+      api.platform = this.platform ?? "service";
+      return api;
+   }
+
+   pluginRegister(plugin) {
+      plugin(this.pluginAPI());
    }
 
    //
