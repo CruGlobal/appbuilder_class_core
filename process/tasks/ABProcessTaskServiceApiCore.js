@@ -21,7 +21,16 @@ let ApiDefaults = {
    // key: {string}
    // unique key to reference this specific Task
 
-   settings: ["url", "method", "headers", "body", "responseJson"],
+   settings: [
+      "url",
+      "method",
+      "headers",
+      "body",
+      "responseJson",
+      "storedSecrets",
+   ],
+   responseJson: 1,
+   headers: [],
 };
 
 module.exports = class ApiTaskCore extends ABProcessElement {
@@ -48,21 +57,23 @@ module.exports = class ApiTaskCore extends ABProcessElement {
     * @return {array} | null
     */
    processDataFields() {
-      // const label = `${this.label}->Value`;
+      const label = `${this.label}->rawResponse`;
       // this is a calculate task, so let's include a fake ABFieldNumber
       // for the .field value, so other tasks that limit their operations
       // to fields can use this as a number
-      // if (!this._fakeNum) {
-      //    this._fakeObj = this.AB.objectNew({});
-      //    this._fakeNum = this.AB.fieldNew(
-      //       { key: "number", name: label, label },
-      //       this._fakeObj
-      //    );
-      // }
-      // return {
-      //    key: `${this.id}.value`,
-      //    label,
-      //    field: this._fakeNum,
-      // };
+      if (!this._fakeField) {
+         this._fakeObj = this.AB.objectNew({});
+         this._fakeField = this.AB.fieldNew(
+            { key: " string", name: label, label },
+            this._fakeObj
+         );
+      }
+      return [
+         {
+            key: `${this.id}.value`,
+            label,
+            field: this._fakeField,
+         },
+      ];
    }
 };
