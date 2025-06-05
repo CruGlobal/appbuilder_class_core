@@ -58,19 +58,16 @@ module.exports = class ApiTaskCore extends ABProcessElement {
     */
    processDataFields() {
       const label = `${this.label}->rawResponse`;
-      // this is a calculate task, so let's include a fake ABFieldNumber
-      // for the .field value, so other tasks that limit their operations
-      // to fields can use this as a number
       if (!this._fakeField) {
          this._fakeObj = this.AB.objectNew({});
          this._fakeField = this.AB.fieldNew(
-            { key: " string", name: label, label },
-            this._fakeObj
+            { key: "string", name: label, label },
+            this._fakeObj,
          );
       }
       return [
          {
-            key: `${this.id}.value`,
+            key: `${this.id}.rawResponse`,
             label,
             field: this._fakeField,
          },
