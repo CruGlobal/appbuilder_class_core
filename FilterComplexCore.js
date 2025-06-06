@@ -964,8 +964,8 @@ module.exports = class FilterComplexCore extends ABComponent {
       });
 
       // !!! Process Fields of ABProcess
-      // https://github.com/digi-serve/appbuilder_class_core/blob/master/FilterComplexCore.js#L636
-      // https://github.com/digi-serve/appbuilder_class_core/blob/master/FilterComplexCore.js#L564
+      // https://github.com/CruGlobal/appbuilder_class_core/blob/master/FilterComplexCore.js#L636
+      // https://github.com/CruGlobal/appbuilder_class_core/blob/master/FilterComplexCore.js#L564
       // (this._ProcessFields || [])
       //    // if there is no .field, it is probably an embedded special field
       //    .filter((pField) => pField.field == null)
