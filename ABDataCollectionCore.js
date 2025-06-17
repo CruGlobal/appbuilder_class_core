@@ -1568,18 +1568,29 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
                      }
                   });
 
-                  // update values of Formula fields
-                  obj.fields(
-                     (fld) =>
-                        fld &&
-                        fld.key == "formula" &&
-                        connectedFields.filter(
-                           (conFld) => conFld.id == fld.settings.field
-                        ).length > 0
-                  ).forEach((formulaField) => {
-                     updateItemData[formulaField.columnName] =
-                        formulaField.format(updateItemData, true);
-                  });
+                  // Refresh Formula Fields when the connected fields are populated
+                  if (this.settings?.populate) {
+                     obj.fields(
+                        (fld) =>
+                           fld &&
+                           fld.key == "formula" &&
+                           connectedFields.filter((conFld) => {
+                              return (
+                                 conFld.id == fld.settings.field &&
+                                 // Populate all connect fields
+                                 (this.settings?.populate == true ||
+                                    // Populate specific connect fields
+                                    (Array.isArray(this.settings?.populate) &&
+                                       this.settings?.populate.indexOf(
+                                          conFld.id
+                                       ) > -1))
+                              );
+                           }).length > 0
+                     ).forEach((formulaField) => {
+                        updateItemData[formulaField.columnName] =
+                           formulaField.format(updateItemData, true);
+                     });
+                  }
 
                   // If this item needs to update
                   // meaning there is > 1 key in the object (we always have .id)
