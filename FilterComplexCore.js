@@ -300,9 +300,9 @@ module.exports = class FilterComplexCore extends ABComponent {
    dateValid(value, rule, compareValue) {
       let result = false;
 
-      if (!(value instanceof Date)) value = new Date(value);
+      if (value && !(value instanceof Date)) value = new Date(value);
 
-      if (!(compareValue instanceof Date))
+      if (compareValue && !(compareValue instanceof Date))
          compareValue = new Date(compareValue);
       switch (rule) {
          case "less":
@@ -317,21 +317,29 @@ module.exports = class FilterComplexCore extends ABComponent {
          case "greater_or_equal":
             result = value >= compareValue;
             break;
+         case "less_current":
+            result = value.setHours?.(0, 0, 0, 0) < (new Date()).setHours(0, 0, 0, 0);
+            break;
+         case "greater_current":
+            result = value.setHours?.(0, 0, 0, 0) > (new Date()).setHours(0, 0, 0, 0);
+            break;
+         case "less_or_equal_current":
+            result = value.setHours?.(0, 0, 0, 0) <= (new Date()).setHours(0, 0, 0, 0);
+            break;
+         case "greater_or_equal_current":
+            result = value.setHours?.(0, 0, 0, 0) >= (new Date()).setHours(0, 0, 0, 0);
+            break
          case "is_current_date":
             result =
-               value.setHours(0, 0, 0, 0) == compareValue.setHours(0, 0, 0, 0);
+               value.setHours?.(0, 0, 0, 0) == compareValue.setHours(0, 0, 0, 0);
             break;
+         case "is_null":
          case "is_empty":
             result = !value;
             break;
+         case "is_not_null":
          case "is_not_empty":
             result = !!value;
-            break;
-         case "is_null":
-            result = value == null;
-            break;
-         case "is_not_null":
-            result = value != null;
             break;
          default:
             result = this.queryFieldValid(value, rule, compareValue);
