@@ -1445,6 +1445,12 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
 
                      this.__dataCollection.remove(id);
 
+                     // NOTE: Preserve the current cursor after item removal.
+                     // Webix v.10.1 automatically clears the cursor when an item is removed from the collection.
+                     if (currData && currData.id != id) {
+                        this.__dataCollection.setCursor(currData.id);
+                     }
+
                      // TODO: update tree list
                      // if (this.__treeCollection) {
                      //  this.__treeCollection.remove(id);
@@ -1604,6 +1610,30 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
                            f.getRelationValue(values);
                      }
                   });
+
+                  // Refresh Formula Fields when the connected fields are populated
+                  if (this.settings?.populate) {
+                     obj.fields(
+                        (fld) =>
+                           fld &&
+                           fld.key == "formula" &&
+                           connectedFields.filter((conFld) => {
+                              return (
+                                 conFld.id == fld.settings.field &&
+                                 // Populate all connect fields
+                                 (this.settings?.populate == true ||
+                                    // Populate specific connect fields
+                                    (Array.isArray(this.settings?.populate) &&
+                                       this.settings?.populate.indexOf(
+                                          conFld.id
+                                       ) > -1))
+                              );
+                           }).length > 0
+                     ).forEach((formulaField) => {
+                        updateItemData[formulaField.columnName] =
+                           formulaField.format(updateItemData, true);
+                     });
+                  }
 
                   // If this item needs to update
                   // meaning there is > 1 key in the object (we always have .id)
@@ -1883,7 +1913,8 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
                // NOTE: we can clear data here to update UI display, then data will be fetched when webix.dataFeed event
                if (
                   !this.settings?.loadAll &&
-                  currentCursor?.id != linkDC.previousCursorId
+                  linkDC.previousCursorId != null &&
+                  linkDC.previousCursorId != currentCursor?.id
                )
                   this.clearAll();
 
