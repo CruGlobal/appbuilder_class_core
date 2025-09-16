@@ -114,7 +114,9 @@ function setValueToFormula(object, formulaString, rowData) {
             } else {
                formulaString = formulaString.replace(
                   element,
-                  rowData[columnName] ? field.format(rowData) : ""
+                  rowData[columnName] || rowData[field.relationName?.()]
+                     ? field.format(rowData)
+                     : ""
                );
             }
          }
