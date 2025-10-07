@@ -2434,8 +2434,10 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
          skip: start || 0,
          sort: sorts,
          populate: this.shouldPopulate,
-         skipPack: this.settings.skipPack ?? false,
       };
+
+      // Skip CSV packing
+      if (this.settings?.skipPack) cond.skipPack = this.settings.skipPack;
 
       //// NOTE: we no longer set a default limit on loadData() but
       //// require the platform.loadData() to pass in a default limit.
