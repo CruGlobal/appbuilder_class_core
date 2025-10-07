@@ -254,6 +254,9 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
       // how is the data between this ABDataCollection and it's
       // .datasource synced?
 
+      // Skip CSV packing
+      this.settings.skipPack = values?.settings?.skipPack ?? false;
+
       this.__datasource = null;
       // {obj} .__datasource
       // the reference to the ABObject/ABObjectQuery that this ABDataCollection
@@ -2431,6 +2434,7 @@ module.exports = class ABDataCollectionCore extends ABMLClass {
          skip: start || 0,
          sort: sorts,
          populate: this.shouldPopulate,
+         skipPack: this.settings.skipPack ?? false,
       };
 
       //// NOTE: we no longer set a default limit on loadData() but
