@@ -10,7 +10,7 @@ jobs:
     name: Label
     # Only run if the PR closed by merging and we have a label
     if: ${{ github.event.pull_request.merged }}
-    uses: digi-serve/.github/.github/workflows/get-pr-release-label.yml@master
+    uses: CruGlobal/.github/.github/workflows/get-pr-release-label.yml@main
   call-e2e-tests:
     name: Test
     needs: [call-get-label]
@@ -26,17 +26,19 @@ jobs:
       type: ${{ needs.call-get-label.outputs.label }}
   call-create-release:
     name: Release
-    uses: digi-serve/.github/.github/workflows/create-release.yml@master
+    uses: CruGlobal/.github/.github/workflows/create-release.yml@main
     needs: [call-bump-version]
     with:
       tag: v${{ needs.call-bump-version.outputs.new_version }}
   call-dispatch-updates:
-    name: Dispatch
     needs: [ call-bump-version, call-get-label ]
-    uses: ./.github/workflows/dispatch-update-platforms.yml
+    uses: CruGlobal/.github/.github/workflows/dispatch-update.yml@main
     with:
+      dispatch_repos: '["ab_platform_web","appbuilder_platform_service"]'
+      dispatch_type: core_new_version
       version: ${{ needs.call-bump-version.outputs.new_version }}
       type: ${{ needs.call-get-label.outputs.label }}
+      app_id: ${{ vars.GS_DEV_APP_ID }}
     secrets:
-      TOKEN: ${{ secrets.PAT }}
+      app_secret: ${{ secrets.GS_DEV_APP_PK }}
   

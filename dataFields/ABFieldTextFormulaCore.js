@@ -107,9 +107,13 @@ function setValueToFormula(object, formulaString, rowData) {
                      : ""
                );
             } else {
+               
                formulaString = formulaString.replace(
                   element,
-                  rowData[columnName] ? field.format(rowData) : ""
+                  // support normal field and connect field
+                  (rowData[columnName] || rowData[field.relationName?.()])
+                     ? field.format(rowData)
+                     : ""
                );
             }
          }

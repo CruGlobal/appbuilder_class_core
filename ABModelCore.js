@@ -751,6 +751,16 @@ export default class ABModelCore {
       let myObject = this.object;
 
       let content = data.data;
+      const firstRow = content[0];
+
+      // Note: CSV will refer to the columns at the first row in a list to generate CSV columns.
+      // if the first row were missing somecolumns and the next rows has those columns.
+      // they will lost those columns and values
+      if(firstRow) {
+        const columnNames = Object.keys(firstRow);
+        for (const missingField of myObject.fields(f => columnNames.indexOf(f.columnName) === -1))
+           firstRow[missingField.columnName] = undefined;
+      }
       let returnType = "array";
       if (!Array.isArray(content)) {
          returnType = "single";
@@ -826,8 +836,9 @@ export default class ABModelCore {
          }
 
          let connData = Object.values(connHash);
+         const isPKID = connPK === "id";
          connData.forEach((c) => {
-            if (c.id == c[connPK]) {
+            if (!isPKID && c.id == c[connPK]) {
                delete c.id;
             }
 
@@ -841,10 +852,11 @@ export default class ABModelCore {
       });
 
       // final data preparations for csv encoding
+      const isPKID = myObject.PK();
       for (let I = 0; I < content.length; I++) {
          let row = content[I];
          // client side .normalizeData() should repopulate .id
-         delete row.id;
+         !isPKID && delete row.id;
 
          // we don't use .properties anymore, right?
          delete row.properties;

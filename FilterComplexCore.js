@@ -300,9 +300,9 @@ export default class FilterComplexCore extends ABComponent {
    dateValid(value, rule, compareValue) {
       let result = false;
 
-      if (!(value instanceof Date)) value = new Date(value);
+      if (value && !(value instanceof Date)) value = new Date(value);
 
-      if (!(compareValue instanceof Date))
+      if (compareValue && !(compareValue instanceof Date))
          compareValue = new Date(compareValue);
       switch (rule) {
          case "less":
@@ -317,21 +317,29 @@ export default class FilterComplexCore extends ABComponent {
          case "greater_or_equal":
             result = value >= compareValue;
             break;
+         case "less_current":
+            result = value.setHours?.(0, 0, 0, 0) < (new Date()).setHours(0, 0, 0, 0);
+            break;
+         case "greater_current":
+            result = value.setHours?.(0, 0, 0, 0) > (new Date()).setHours(0, 0, 0, 0);
+            break;
+         case "less_or_equal_current":
+            result = value.setHours?.(0, 0, 0, 0) <= (new Date()).setHours(0, 0, 0, 0);
+            break;
+         case "greater_or_equal_current":
+            result = value.setHours?.(0, 0, 0, 0) >= (new Date()).setHours(0, 0, 0, 0);
+            break
          case "is_current_date":
             result =
-               value.setHours(0, 0, 0, 0) == compareValue.setHours(0, 0, 0, 0);
+               value.setHours?.(0, 0, 0, 0) == compareValue.setHours(0, 0, 0, 0);
             break;
+         case "is_null":
          case "is_empty":
             result = !value;
             break;
+         case "is_not_null":
          case "is_not_empty":
             result = !!value;
-            break;
-         case "is_null":
-            result = value == null;
-            break;
-         case "is_not_null":
-            result = value != null;
             break;
          default:
             result = this.queryFieldValid(value, rule, compareValue);
@@ -964,8 +972,8 @@ export default class FilterComplexCore extends ABComponent {
       });
 
       // !!! Process Fields of ABProcess
-      // https://github.com/digi-serve/appbuilder_class_core/blob/master/FilterComplexCore.js#L636
-      // https://github.com/digi-serve/appbuilder_class_core/blob/master/FilterComplexCore.js#L564
+      // https://github.com/CruGlobal/appbuilder_class_core/blob/master/FilterComplexCore.js#L636
+      // https://github.com/CruGlobal/appbuilder_class_core/blob/master/FilterComplexCore.js#L564
       // (this._ProcessFields || [])
       //    // if there is no .field, it is probably an embedded special field
       //    .filter((pField) => pField.field == null)

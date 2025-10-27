@@ -618,7 +618,7 @@ var queryPreviousTasks = (
 
          // value = task[method].apply(task, param);
 
-         if (value === null) value = [];
+         if (value == null) value = [];
          responses = _concat(responses, value);
 
          // add any previous tasks to our list

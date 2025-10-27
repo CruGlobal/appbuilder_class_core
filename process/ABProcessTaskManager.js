@@ -39,6 +39,7 @@ var AllProcessElements = [
    await import(
       "../../platform/process/tasks/ABProcessTaskServiceAccountingJEArchive"
    ),
+   await import("../../platform/process/tasks/ABProcessTaskServiceApi"),
    await import("../../platform/process/tasks/ABProcessTaskServiceCalculate"),
    await import(
       "../../platform/process/tasks/ABProcessTaskServiceInsertRecord"

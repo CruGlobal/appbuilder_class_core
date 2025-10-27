@@ -71,6 +71,33 @@ function queueOperation(fn, timeout = 20) {
    }
 }
 
+/**
+ * @function SearchWhereCond()
+ * Recursively search through the where condition and find any
+ * rules that match one of the provided rules.
+ * If one is found, we call the given callback with that rule.
+ * @param {*} cond
+ *        The current condition to search through. Could be the base
+ *        glue logic, or an individual rule.
+ * @param {array} rules
+ *        An array of cond.rule values to search for.
+ *        eg: ["equals", "contains", "in_data_collection"]
+ * @param {fn} cb
+ *        A callback function to call when a matching rule is found.
+ */
+function SearchWhereCond(cond, rules, cb) {
+   if (!cond) return;
+   if (cond.rules) {
+      cond.rules.forEach((r) => {
+         SearchWhereCond(r, rules, cb);
+      });
+      return;
+   }
+   if (rules.filter((f) => f == cond.rule).length > 0) {
+      cb(cond);
+   }
+}
+
 export default class ABDataCollectionCore extends ABMLClass {
    constructor(attributes, AB) {
       super(["label"], AB);
@@ -108,6 +135,10 @@ export default class ABDataCollectionCore extends ABMLClass {
       // {ABModel}
       // An instance of the ABModel used for this DataCollection to
       // access data on the server.
+
+      this._pendingLoadDataResolves = {
+         /* jobID : {pendingResolve } */
+      };
    }
 
    /**
@@ -222,6 +253,9 @@ export default class ABDataCollectionCore extends ABMLClass {
       // {int} .settings.syncType
       // how is the data between this ABDataCollection and it's
       // .datasource synced?
+
+      // Skip CSV packing
+      this.settings.skipPack = values?.settings?.skipPack ?? false;
 
       this.__datasource = null;
       // {obj} .__datasource
@@ -1415,6 +1449,12 @@ export default class ABDataCollectionCore extends ABMLClass {
                      this.__dataCollection.remove(id);
                      this.__totalCount--;
 
+                     // NOTE: Preserve the current cursor after item removal.
+                     // Webix v.10.1 automatically clears the cursor when an item is removed from the collection.
+                     if (currData && currData.id != id) {
+                        this.__dataCollection.setCursor(currData.id);
+                     }
+
                      // TODO: update tree list
                      // if (this.__treeCollection) {
                      //  this.__treeCollection.remove(id);
@@ -1574,6 +1614,30 @@ export default class ABDataCollectionCore extends ABMLClass {
                            f.getRelationValue(values);
                      }
                   });
+
+                  // Refresh Formula Fields when the connected fields are populated
+                  if (this.settings?.populate) {
+                     obj.fields(
+                        (fld) =>
+                           fld &&
+                           fld.key == "formula" &&
+                           connectedFields.filter((conFld) => {
+                              return (
+                                 conFld.id == fld.settings.field &&
+                                 // Populate all connect fields
+                                 (this.settings?.populate == true ||
+                                    // Populate specific connect fields
+                                    (Array.isArray(this.settings?.populate) &&
+                                       this.settings?.populate.indexOf(
+                                          conFld.id
+                                       ) > -1))
+                              );
+                           }).length > 0
+                     ).forEach((formulaField) => {
+                        updateItemData[formulaField.columnName] =
+                           formulaField.format(updateItemData, true);
+                     });
+                  }
 
                   // If this item needs to update
                   // meaning there is > 1 key in the object (we always have .id)
@@ -1856,7 +1920,8 @@ export default class ABDataCollectionCore extends ABMLClass {
                // NOTE: we can clear data here to update UI display, then data will be fetched when webix.dataFeed event
                if (
                   !this.settings?.loadAll &&
-                  currentCursor?.id != linkDC.previousCursorId
+                  linkDC.previousCursorId != null &&
+                  linkDC.previousCursorId != currentCursor?.id
                )
                   this.clearAll();
 
@@ -2052,6 +2117,34 @@ export default class ABDataCollectionCore extends ABMLClass {
             },
          });
       }
+
+      // add listeners to Datacollection that we are filtering using
+      // in_data_collection conditions:
+      let listFilterDCs = [];
+      let [whereCond] = this.getWhereClause(0, 0);
+      SearchWhereCond(
+         whereCond,
+         ["in_data_collection", "not_in_data_collection"],
+         (rule) => {
+            // value should be the ID reference to the cond DC
+            let condDC = this.AB.datacollectionByID(rule.value);
+            if (condDC) {
+               listFilterDCs.push(condDC);
+            }
+         }
+      );
+      listFilterDCs.forEach((condDC) => {
+         this.eventAdd({
+            emitter: condDC,
+            eventName: "loadData",
+            listener: () => {
+               // the filter by datacollection has changed values
+               // so we need to reload based upon the new values
+               this.clearAll();
+               this.loadData();
+            },
+         });
+      });
    }
 
    /*
@@ -2241,9 +2334,33 @@ export default class ABDataCollectionCore extends ABMLClass {
          wheres = __additionalWheres;
       }
 
+      // Handle conditions that have in_data_collection
+      // The server doesn't know the current state of the datacollections
+      // running on the client, so if we are using a condition that
+      // references our datacollection, we need to pass along the
+      // where condition of that datacollection
+      let patch = (rule) => {
+         // value should be the ID reference to the cond DC
+         let condDC = this.AB.datacollectionByID(rule.value);
+         if (condDC) {
+            let [cond] = condDC.getWhereClause(0, 0);
+            if (cond) {
+               // store that under .linkCond
+               rule.linkCond = cond;
+            }
+         }
+      };
+      SearchWhereCond(
+         wheres,
+         ["in_data_collection", "not_in_data_collection"],
+         patch
+      );
+
       // remove any null in the .rules
       // if (wheres?.rules?.filter) wheres.rules = wheres.rules.filter((r) => r);
-      wheres = this.datasource.whereCleanUp(wheres);
+      if (this.datasource) {
+         wheres = this.datasource.whereCleanUp(wheres);
+      }
 
       return [wheres, start, limit];
    }
@@ -2270,107 +2387,7 @@ export default class ABDataCollectionCore extends ABMLClass {
       // pull the defined sort values
       var sorts = this.settings.objectWorkspace.sortFields || [];
 
-      let [wheres, s2, l2] = this.getWhereClause(start, limit);
-      start = s2;
-      limit = l2;
-
-      // // pull filter conditions
-      // let wheres = this.AB.cloneDeep(
-      //    this.settings.objectWorkspace.filterConditions ?? {}
-      // );
-      // // if we pass new wheres with a reload use them instead
-      // if (this.__reloadWheres) {
-      //    wheres = this.__reloadWheres;
-      // }
-      // wheres.glue = wheres.glue || "and";
-      // wheres.rules = wheres.rules || [];
-
-      // const __additionalWheres = {
-      //    glue: "and",
-      //    rules: [],
-      // };
-
-      // // add the filterCond if there are rules to add
-      // if (this.__filterCond?.rules?.length > 0) {
-      //    __additionalWheres.rules.push(this.__filterCond);
-      // }
-
-      // // Filter by a selected cursor of a link DC
-      // let linkRule = this.ruleLinkedData();
-      // if (!this.settings.loadAll && linkRule) {
-      //    __additionalWheres.rules.push(linkRule);
-      // }
-      // // pull data rows following the follow data collection
-      // else if (this.datacollectionFollow) {
-      //    const followCursor = this.datacollectionFollow.getCursor();
-      //    // store the PK as a variable
-      //    let PK = this.datasource.PK();
-      //    // if the datacollection we are following is a query
-      //    // add "BASE_OBJECT." to the PK so we can select the
-      //    // right value to report the cursor change to
-      //    if (this.datacollectionFollow.settings.isQuery) {
-      //       PK = "BASE_OBJECT." + PK;
-      //    }
-      //    if (followCursor) {
-      //       start = 0;
-      //       limit = null;
-      //       wheres = {
-      //          glue: "and",
-      //          rules: [
-      //             {
-      //                key: this.datasource.PK(),
-      //                rule: "equals",
-      //                value: followCursor[PK],
-      //             },
-      //          ],
-      //       };
-      //    }
-      //    // Set no return rows
-      //    else {
-      //       wheres = {
-      //          glue: "and",
-      //          rules: [
-      //             {
-      //                key: this.datasource.PK(),
-      //                rule: "equals",
-      //                value: "NO RESULT ROW",
-      //             },
-      //          ],
-      //       };
-      //    }
-      // }
-
-      // // Combine setting & program filters
-      // if (__additionalWheres.rules.length) {
-      //    if (wheres.rules.length) {
-      //       __additionalWheres.rules.unshift(wheres);
-      //    }
-      //    wheres = __additionalWheres;
-      // }
-
-      // // remove any null in the .rules
-      // // if (wheres?.rules?.filter) wheres.rules = wheres.rules.filter((r) => r);
-      // wheres = obj.whereCleanUp(wheres);
-
-      // set query condition
-      var cond = {
-         where: wheres || {},
-         // limit: limit || 20,
-         skip: start || 0,
-         sort: sorts,
-         populate: this.shouldPopulate,
-      };
-
-      //// NOTE: we no longer set a default limit on loadData() but
-      //// require the platform.loadData() to pass in a default limit.
-      if (limit != null) {
-         cond.limit = limit;
-      }
-
-      // if settings specify loadAll, then remove the limit
-      if (this.settings.loadAll && !this.isCursorFollow) {
-         delete cond.limit;
-      }
+      // Wait for any dependent DCs to initialize
 
       //
       // Step 1: make sure any DataCollections we are linked to are
@@ -2386,23 +2403,55 @@ export default class ABDataCollectionCore extends ABMLClass {
       // Step 2: if we have any filter rules that depend on other DataCollections,
       // then wait for them to be initialized first.
       // eg: "(not_)in_data_collection" rule filters
-      if (wheres?.rules?.length) {
+      // get a preWheres that will at least include our specific filter data
+      // and use that to determine if we need to wait for any other DCs to load
+      let [preWheres] = this.getWhereClause(start, limit);
+      if (preWheres?.rules?.length) {
          const dcFilters = [];
 
-         wheres.rules.forEach((rule) => {
-            // if this collection is filtered by data collections we need to load them in case we need to validate from them later
-            if (
-               rule.rule == "in_data_collection" ||
-               rule.rule == "not_in_data_collection"
-            ) {
-               const dv = this.AB.datacollectionByID(rule.value);
+         // this is a recursive search that should catch all rules
+         SearchWhereCond(
+            preWheres,
+            ["in_data_collection", "not_in_data_collection"],
+            (rule) => {
+               let dv = this.AB.datacollectionByID(rule.value);
                if (dv) {
                   dcFilters.push(this.waitForDataCollectionToInitialize(dv));
                }
             }
-         });
+         );
 
          await Promise.all(dcFilters);
+      }
+
+      // NOW that any dependent DCs are initialized,
+      // we can proceed with calculating our where clause for real this time
+
+      let [wheres, s2, l2] = this.getWhereClause(start, limit);
+      start = s2;
+      limit = l2;
+
+      // set query condition
+      var cond = {
+         where: wheres || {},
+         // limit: limit || 20,
+         skip: start || 0,
+         sort: sorts,
+         populate: this.shouldPopulate,
+      };
+
+      // Skip CSV packing
+      if (this.settings?.skipPack) cond.skipPack = this.settings.skipPack;
+
+      //// NOTE: we no longer set a default limit on loadData() but
+      //// require the platform.loadData() to pass in a default limit.
+      if (limit != null) {
+         cond.limit = limit;
+      }
+
+      // if settings specify loadAll, then remove the limit
+      if (this.settings.loadAll && !this.isCursorFollow) {
+         delete cond.limit;
       }
 
       //
@@ -2412,12 +2461,11 @@ export default class ABDataCollectionCore extends ABMLClass {
       // the actual resolve() should happen in the
       // .processIncomingData() after the  data is processed.
       return new Promise((resolve, reject) => {
-         this._pendingLoadDataResolve = {
-            resolve: resolve,
-            reject: reject,
-         };
-
+         const jobID = this.AB.jobID();
+         cond.jobID = jobID;
+         this._pendingLoadDataResolves[jobID] = { resolve, reject };
          this.platformFind(model, cond).catch((err) => {
+            delete this._pendingLoadDataResolves[jobID];
             reject(err);
          });
       });
@@ -2558,11 +2606,9 @@ export default class ABDataCollectionCore extends ABMLClass {
             }
 
             // now we close out our .loadData() promise.resolve() :
-            if (this._pendingLoadDataResolve) {
-               this._pendingLoadDataResolve.resolve();
-
-               // after we call .resolve() stop tracking this:
-               this._pendingLoadDataResolve = null;
+            if (data.jobID) {
+               this._pendingLoadDataResolves[data.jobID].resolve();
+               delete this._pendingLoadDataResolves[data.jobID];
             }
 
             // If dc set load all, then it will not trigger .loadData in dc at
