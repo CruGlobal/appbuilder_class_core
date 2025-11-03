@@ -770,7 +770,8 @@ class ABFactory extends EventEmitter {
    }
 
    pluginRegister(plugin) {
-      plugin(this.pluginAPI());
+      let pluginClass = plugin(this.pluginAPI());
+      this.ClassManager.pluginRegister(pluginClass);
    }
 
    //
