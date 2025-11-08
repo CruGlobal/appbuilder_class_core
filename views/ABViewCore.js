@@ -352,11 +352,11 @@ module.exports = class ABViewCore extends ABMLClass {
       var form = null;
 
       var curr = this;
-      while (curr.key != "form" && !curr.isRoot() && curr.parent) {
+      while (!curr.isForm && !curr.isRoot() && curr.parent) {
          curr = curr.parent;
       }
 
-      if (curr.key == "form") {
+      if (curr.isForm) {
          form = curr;
       }
 

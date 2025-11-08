@@ -71,6 +71,7 @@ var AllViews = [
    require("../platform/views/ABViewFormSelectSingle"),
    require("../platform/views/ABViewFormTextbox"),
    require("../platform/views/ABViewFormTree"),
+   require("../platform/views/ABViewFormURL"),
 ];
 
 /*
@@ -120,8 +121,8 @@ module.exports = class ABViewManagerCore {
             if (!isPlugin(values.key)) {
                console.error(
                   "!! View[" +
-                  values.key +
-                  "] not yet defined.  Have an ABView instead:"
+                     values.key +
+                     "] not yet defined.  Have an ABView instead:"
                );
             }
             return new Views["view"](values, application, parent);

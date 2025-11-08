@@ -56,6 +56,7 @@ const ABViewFormPropertyComponentDefaults = {
 module.exports = class ABViewFormCore extends ABViewContainer {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewFormDefaults);
+      this.isForm = true;
    }
 
    static common() {
