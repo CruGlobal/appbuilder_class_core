@@ -469,6 +469,15 @@ module.exports = class FilterComplexCore extends ABComponent {
 
       if (!compareValue) return result;
 
+      // JOHNNY: ERROR: .split is not a function
+      if (!compareValue.split || typeof compareValue.split != "function") {
+         console.error(
+            "---> FilterComplexCore: queryFieldValid() compareValue is not a string",
+            compareValue
+         );
+         return result;
+      }
+
       // queryId:fieldId
       const queryId = compareValue.split(":")[0],
          fieldId = compareValue.split(":")[1];
