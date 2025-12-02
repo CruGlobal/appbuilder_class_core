@@ -933,7 +933,6 @@ module.exports = class ABModelCore {
       connections.forEach((connField) => {
          let connHash = {};
          let relationName = connField.relationName();
-         let connPK = connField.datasourceLink.PK();
 
          // gather all the connected data for this field
          for (let I = 0; I < content.length; I++) {
@@ -941,14 +940,16 @@ module.exports = class ABModelCore {
             if (row[relationName]) {
                if (Array.isArray(row[relationName])) {
                   row[relationName].forEach((r) => {
-                     if (!connHash[r.id]) {
-                        connHash[r.id] = r;
+                     let rval = connField.getRelationValue(r);
+                     if (!connHash[rval]) {
+                        connHash[rval] = r;
                      }
                   });
                } else {
                   let r = row[relationName];
-                  if (!connHash[r.id]) {
-                     connHash[r.id] = r;
+                  let rval = connField.getRelationValue(r);
+                  if (!connHash[rval]) {
+                     connHash[rval] = r;
                   }
                }
             }
@@ -956,34 +957,36 @@ module.exports = class ABModelCore {
 
          let connObject = connField.datasourceLink;
          let values = Object.values(connHash);
+         if (values.length > 0) {
+            relations[connObject.id] = connHash;
 
-         relations[connObject.id] = connHash;
+            let connRelations = this.csvPackGetRelations(connObject, values);
 
-         let connRelations = this.csvPackGetRelations(connObject, values);
-
-         // merge these into my relations
-         Object.keys(connRelations).forEach((id) => {
-            if (!relations[id]) {
-               relations[id] = connRelations[id];
-            } else {
-               Object.keys(connRelations[id]).forEach((cid) => {
-                  if (!relations[id][cid]) {
-                     relations[id][cid] = connRelations[id][cid];
-                  } else {
-                     // make sure we add any new fields from conn to relations
-                     // hopefully this is just adding a __relation value that wasn't
-                     // already there.
-                     Object.keys(connRelations[id][cid]).forEach((key) => {
-                        if (!relations[id][cid][key]) {
-                           relations[id][cid][key] =
-                              connRelations[id][cid][key];
-                        }
-                     });
-                  }
-               });
-            }
-         });
+            // merge these into my relations
+            Object.keys(connRelations).forEach((id) => {
+               if (!relations[id]) {
+                  relations[id] = connRelations[id];
+               } else {
+                  Object.keys(connRelations[id]).forEach((cid) => {
+                     if (!relations[id][cid]) {
+                        relations[id][cid] = connRelations[id][cid];
+                     } else {
+                        // make sure we add any new fields from conn to relations
+                        // hopefully this is just adding a __relation value that wasn't
+                        // already there.
+                        Object.keys(connRelations[id][cid]).forEach((key) => {
+                           if (!relations[id][cid][key]) {
+                              relations[id][cid][key] =
+                                 connRelations[id][cid][key];
+                           }
+                        });
+                     }
+                  });
+               }
+            });
+         }
       });
+      return relations;
    }
 
    csvPackReIndexRelations(relations) {
@@ -1010,11 +1013,13 @@ module.exports = class ABModelCore {
                hasRelationData = true;
                if (Array.isArray(row[relationName])) {
                   row[relationName].forEach((r) => {
-                     ids.push(connHash[r.id]._csvID);
+                     let rval = connField.getRelationValue(r);
+                     ids.push(connHash[rval]._csvID);
                   });
                } else {
                   let r = row[relationName];
-                  ids.push(connHash[r.id]._csvID);
+                  let rval = connField.getRelationValue(r);
+                  ids.push(connHash[rval]._csvID);
                }
             }
             // only make an update if it did have relation data
@@ -1086,7 +1091,7 @@ module.exports = class ABModelCore {
 
       // do this for the relations as well
       Object.keys(relations).forEach((id) => {
-         let relatedObj = this.AB.objectById(id);
+         let relatedObj = this.AB.objectByID(id);
          let values = Object.values(relations[id]);
          this.csvPackReEncodeRelations(relations, relatedObj, values);
          this.csvPackFinalModifications(relatedObj, values);
@@ -1435,7 +1440,7 @@ module.exports = class ABModelCore {
 
       this.csvUnpackUnstringifyFields(myObject, jsonData);
       Object.keys(relations).forEach((id) => {
-         this.csvUnpackUnstringifyFields(this.AB.objectById(id), relations[id]);
+         this.csvUnpackUnstringifyFields(this.AB.objectByID(id), relations[id]);
          // to hash by _csvID
          let hash = {};
          relations[id].forEach((c) => {
@@ -1446,7 +1451,7 @@ module.exports = class ABModelCore {
 
       // now reconnect the data
       Object.keys(relations).forEach((id) => {
-         let relatedObj = this.AB.objectById(id);
+         let relatedObj = this.AB.objectByID(id);
          let values = Object.values(relations[id]);
          this.csvUnpackReconnectRelations(relations, relatedObj, values);
       });
