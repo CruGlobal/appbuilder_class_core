@@ -997,11 +997,14 @@ module.exports = class ABModelCore {
                try {
                   row[f.columnName] = JSON.parse(val);
                } catch (e) {
-                  console.error(
-                     "Error parsing JSON data for column: " + f.columnName,
-                     val,
-                     e
-                  );
+                  // sometimes "list" fields are not JSON parseable
+                  if (f.key != "list") {
+                     console.error(
+                        "Error parsing JSON data for column: " + f.columnName,
+                        val,
+                        e
+                     );
+                  }
                }
             }
          });
