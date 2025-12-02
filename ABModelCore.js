@@ -923,10 +923,21 @@ module.exports = class ABModelCore {
       });
    }
 
-   csvPackGetRelations(myObject, content) {
+   csvPackMergeRelations(relations, id, connHash) {
+      relations[id] = this.AB.defaultsDeep(relations[id] || {}, connHash);
+   }
+
+   csvPackGetRelations(myObject, content, visited = new Set()) {
       let relations = {
          /* objectID: { row.id: entryJSON} */
       };
+
+      // Check for circular reference
+      if (visited.has(myObject.id)) {
+         console.warn(`Circular reference detected for object ${myObject.id}`);
+         return relations;
+      }
+      visited.add(myObject.id);
 
       // break out and compact the connected data
       let connections = myObject.connectFields();
@@ -958,34 +969,21 @@ module.exports = class ABModelCore {
          let connObject = connField.datasourceLink;
          let values = Object.values(connHash);
          if (values.length > 0) {
-            relations[connObject.id] = connHash;
+            this.csvPackMergeRelations(relations, connObject.id, connHash);
 
-            let connRelations = this.csvPackGetRelations(connObject, values);
+            let connRelations = this.csvPackGetRelations(
+               connObject,
+               values,
+               visited
+            );
 
             // merge these into my relations
             Object.keys(connRelations).forEach((id) => {
-               if (!relations[id]) {
-                  relations[id] = connRelations[id];
-               } else {
-                  Object.keys(connRelations[id]).forEach((cid) => {
-                     if (!relations[id][cid]) {
-                        relations[id][cid] = connRelations[id][cid];
-                     } else {
-                        // make sure we add any new fields from conn to relations
-                        // hopefully this is just adding a __relation value that wasn't
-                        // already there.
-                        Object.keys(connRelations[id][cid]).forEach((key) => {
-                           if (!relations[id][cid][key]) {
-                              relations[id][cid][key] =
-                                 connRelations[id][cid][key];
-                           }
-                        });
-                     }
-                  });
-               }
+               this.csvPackMergeRelations(relations, id, connRelations[id]);
             });
          }
       });
+      visited.delete(myObject.id);
       return relations;
    }
 
@@ -1075,15 +1073,23 @@ module.exports = class ABModelCore {
       //   }
       //   total_bytes:xx,
       // }
+
+      if (!data || typeof data !== "object") {
+         throw new Error("csvPack: Invalid data parameter");
+      }
+      if (data.data === undefined) {
+         throw new Error("csvPack: data.data is required");
+      }
+
       let packedData = { data: "", relations: {} };
       let myObject = this.object;
 
       let content = data.data;
-
       if (!content || (Array.isArray(content) && content.length === 0)) {
          // Return the original data if there is no content to pack
          // existing code will handle this fine.
          return data;
+      }
       this.csvPackPrepareFirstRow(myObject, content);
 
       let returnType = "array";
@@ -1123,7 +1129,11 @@ module.exports = class ABModelCore {
       }
 
       // now convert the data to CSV
-      packedData.data = this.AB.jsonToCsv(content);
+      packedData.data = await this.AB.jsonToCsvBatched(
+         content,
+         batchSize,
+         jobID
+      );
       packedData.type = returnType; // single or array
 
       let newData = {};
