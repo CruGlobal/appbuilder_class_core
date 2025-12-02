@@ -941,14 +941,14 @@ module.exports = class ABModelCore {
                if (Array.isArray(row[relationName])) {
                   row[relationName].forEach((r) => {
                      let rval = connField.getRelationValue(r);
-                     if (!connHash[rval]) {
+                     if (rval != null && !connHash[rval]) {
                         connHash[rval] = r;
                      }
                   });
                } else {
                   let r = row[relationName];
                   let rval = connField.getRelationValue(r);
-                  if (!connHash[rval]) {
+                  if (rval != null && !connHash[rval]) {
                      connHash[rval] = r;
                   }
                }
@@ -1014,12 +1014,24 @@ module.exports = class ABModelCore {
                if (Array.isArray(row[relationName])) {
                   row[relationName].forEach((r) => {
                      let rval = connField.getRelationValue(r);
-                     ids.push(connHash[rval]._csvID);
+                     if (
+                        rval != null &&
+                        connHash[rval] &&
+                        connHash[rval]._csvID != null
+                     ) {
+                        ids.push(connHash[rval]._csvID);
+                     }
                   });
                } else {
                   let r = row[relationName];
                   let rval = connField.getRelationValue(r);
-                  ids.push(connHash[rval]._csvID);
+                  if (
+                     rval != null &&
+                     connHash[rval] &&
+                     connHash[rval]._csvID != null
+                  ) {
+                     ids.push(connHash[rval]._csvID);
+                  }
                }
             }
             // only make an update if it did have relation data
@@ -1068,6 +1080,10 @@ module.exports = class ABModelCore {
 
       let content = data.data;
 
+      if (!content || (Array.isArray(content) && content.length === 0)) {
+         // Return the original data if there is no content to pack
+         // existing code will handle this fine.
+         return data;
       this.csvPackPrepareFirstRow(myObject, content);
 
       let returnType = "array";
@@ -1090,13 +1106,21 @@ module.exports = class ABModelCore {
       this.csvPackFinalModifications(myObject, content);
 
       // do this for the relations as well
-      Object.keys(relations).forEach((id) => {
+      let allIds = Object.keys(relations);
+      for (let i = 0; i < allIds.length; i++) {
+         let id = allIds[i];
          let relatedObj = this.AB.objectByID(id);
-         let values = Object.values(relations[id]);
-         this.csvPackReEncodeRelations(relations, relatedObj, values);
-         this.csvPackFinalModifications(relatedObj, values);
-         packedData.relations[id] = this.AB.jsonToCsv(values);
-      });
+         if (relatedObj) {
+            let values = Object.values(relations[id]);
+            this.csvPackReEncodeRelations(relations, relatedObj, values);
+            this.csvPackFinalModifications(relatedObj, values);
+            packedData.relations[id] = await this.AB.jsonToCsvBatched(
+               values,
+               batchSize,
+               jobID
+            );
+         }
+      }
 
       // now convert the data to CSV
       packedData.data = this.AB.jsonToCsv(content);
@@ -1302,7 +1326,11 @@ module.exports = class ABModelCore {
 
          // if translations are present return them to an object
          if (row.translations) {
-            row.translations = JSON.parse(row.translations);
+            try {
+               row.translations = JSON.parse(row.translations);
+            } catch (e) {
+               // just leave it as it is
+            }
          }
 
          // readd .id to the row
@@ -1352,12 +1380,16 @@ module.exports = class ABModelCore {
                      entries = [entries];
                   }
                   entries.forEach((id) => {
-                     if (connHash[id]) {
+                     if (id != null && connHash[id]) {
                         let connEntry = connHash[id];
                         ids.push(connField.getRelationValue(connEntry));
                         // Alternatively, we could remove the row[columnName] and let
                         // normalizeData() repopulate it.
                         populatedData.push(connEntry);
+                     } else if (id != null) {
+                        console.warn(
+                           `Missing relation entry for _csvID: ${id}`
+                        );
                      }
                   });
                   if (connField.linkType() == "many") {
@@ -1395,7 +1427,7 @@ module.exports = class ABModelCore {
    }
 
    /**
-    * @method csvUnpackDeep
+    * @method csvUnpack
     * unpack the data from our csv format
     * @param {json} data
     *              The csv packed data format.
@@ -1418,6 +1450,12 @@ module.exports = class ABModelCore {
       //   data: [{obj1}, {obj2}, ... {objN}],
       //   total_bytes:xx,
       // }
+      if (!data || !data.csv_packed) {
+         throw new Error("csvUnpack: Invalid data format - csv_packed missing");
+      }
+      if (typeof data.csv_packed.data !== "string") {
+         throw new Error("csvUnpack: Invalid csv_packed.data format");
+      }
 
       let myObject = this.object;
       let parseResult = this.AB.csvToJson(data.csv_packed.data);
@@ -1444,20 +1482,25 @@ module.exports = class ABModelCore {
 
       this.csvUnpackUnstringifyFields(myObject, jsonData);
       Object.keys(relations).forEach((id) => {
-         this.csvUnpackUnstringifyFields(this.AB.objectByID(id), relations[id]);
-         // to hash by _csvID
-         let hash = {};
-         relations[id].forEach((c) => {
-            hash[c._csvID] = c;
-         });
-         relations[id] = hash;
+         let relatedObj = this.AB.objectByID(id);
+         if (relatedObj) {
+            this.csvUnpackUnstringifyFields(relatedObj, relations[id]);
+            // to hash by _csvID
+            let hash = {};
+            relations[id].forEach((c) => {
+               hash[c._csvID] = c;
+            });
+            relations[id] = hash;
+         }
       });
 
       // now reconnect the data
       Object.keys(relations).forEach((id) => {
          let relatedObj = this.AB.objectByID(id);
-         let values = Object.values(relations[id]);
-         this.csvUnpackReconnectRelations(relations, relatedObj, values);
+         if (relatedObj) {
+            let values = Object.values(relations[id]);
+            this.csvUnpackReconnectRelations(relations, relatedObj, values);
+         }
       });
 
       this.csvUnpackReconnectRelations(relations, myObject, jsonData);
