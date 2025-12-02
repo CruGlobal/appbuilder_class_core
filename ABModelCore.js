@@ -1307,7 +1307,9 @@ module.exports = class ABModelCore {
 
          // readd .id to the row
          if (!row.id) {
-            row.id = row[connPK];
+            if (row[connPK]) {
+               row.id = row[connPK];
+            }
          }
       });
    }
@@ -1324,45 +1326,47 @@ module.exports = class ABModelCore {
                let ids = [];
                let populatedData = [];
                let entries = [];
-               try {
-                  // ok, we know this is a possibility, so just skip it
-                  if (row[connField.columnName] !== "") {
-                     entries = JSON.parse(row[connField.columnName]);
-                  }
-               } catch (e) {
-                  if (row[connField.columnName] == "") {
-                     // not a problem, just no data
-                  } else {
-                     // this might be a situation on the server where
-                     // row[columnName] has a value, but row[relationName] is empty.
-                     if (typeof row[relationName] == "undefined") {
-                        row[relationName] = null;
+               if (typeof row[connField.columnName] !== "undefined") {
+                  try {
+                     // ok, we know this is a possibility, so just skip it
+                     if (row[connField.columnName] !== "") {
+                        entries = JSON.parse(row[connField.columnName]);
                      }
-                     // console.error(
-                     //    "Error parsing JSON data for column: " +
-                     //       connField.columnName,
-                     //    e
-                     // );
+                  } catch (e) {
+                     if (row[connField.columnName] == "") {
+                        // not a problem, just no data
+                     } else {
+                        // this might be a situation on the server where
+                        // row[columnName] has a value, but row[relationName] is empty.
+                        if (typeof row[relationName] == "undefined") {
+                           row[relationName] = null;
+                        }
+                        // console.error(
+                        //    "Error parsing JSON data for column: " +
+                        //       connField.columnName,
+                        //    e
+                        // );
+                     }
                   }
-               }
-               if (!Array.isArray(entries)) {
-                  entries = [entries];
-               }
-               entries.forEach((id) => {
-                  if (connHash[id]) {
-                     let connEntry = connHash[id];
-                     ids.push(connField.getRelationValue(connEntry));
-                     // Alternatively, we could remove the row[columnName] and let
-                     // normalizeData() repopulate it.
-                     populatedData.push(connEntry);
+                  if (!Array.isArray(entries)) {
+                     entries = [entries];
                   }
-               });
-               if (connField.linkType() == "many") {
-                  row[connField.columnName] = ids;
-                  row[connField.relationName()] = populatedData;
-               } else {
-                  row[connField.columnName] = ids[0];
-                  row[connField.relationName()] = populatedData[0];
+                  entries.forEach((id) => {
+                     if (connHash[id]) {
+                        let connEntry = connHash[id];
+                        ids.push(connField.getRelationValue(connEntry));
+                        // Alternatively, we could remove the row[columnName] and let
+                        // normalizeData() repopulate it.
+                        populatedData.push(connEntry);
+                     }
+                  });
+                  if (connField.linkType() == "many") {
+                     row[connField.columnName] = ids;
+                     row[connField.relationName()] = populatedData;
+                  } else {
+                     row[connField.columnName] = ids[0] ?? null;
+                     row[connField.relationName()] = populatedData[0] ?? null;
+                  }
                }
             });
          }
@@ -1456,7 +1460,7 @@ module.exports = class ABModelCore {
          this.csvUnpackReconnectRelations(relations, relatedObj, values);
       });
 
-      this.csvUnpackReconnectRelations(myObject, jsonData);
+      this.csvUnpackReconnectRelations(relations, myObject, jsonData);
 
       this.csvUnpackClearCSVID(relations);
 
