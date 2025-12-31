@@ -710,6 +710,169 @@ module.exports = class ABModelCore {
       return false;
    }
 
+   csvPackPrepareFirstRow(myObject, content) {
+      const firstRow = content[0];
+
+      // Note: CSV will refer to the columns at the first row in a list to generate CSV columns.
+      // if the first row were missing somecolumns and the next rows has those columns.
+      // they will lost those columns and values
+      if (firstRow) {
+         const columnNames = Object.keys(firstRow);
+         for (const missingField of myObject.fields(
+            (f) => columnNames.indexOf(f.columnName) === -1
+         ))
+            firstRow[missingField.columnName] = undefined;
+      }
+   }
+
+   csvPackStringifyFields(myObject, content) {
+      // stringify any potential json data
+      // starting with List data
+      let keys = ["list", "json"];
+      let stringifyFields = myObject.fields((f) => keys.indexOf(f.key) > -1);
+      stringifyFields.forEach((f) => {
+         for (let I = 0; I < content.length; I++) {
+            let row = content[I];
+            if (row[f.columnName]) {
+               row[f.columnName] = JSON.stringify(row[f.columnName]);
+            }
+         }
+      });
+   }
+
+   csvPackMergeRelations(relations, id, connHash) {
+      relations[id] = this.AB.defaultsDeep(relations[id] || {}, connHash);
+   }
+
+   csvPackGetRelations(myObject, content, visited = new Set()) {
+      let relations = {
+         /* objectID: { row.id: entryJSON} */
+      };
+
+      // Check for circular reference
+      if (visited.has(myObject.id)) {
+         console.warn(`Circular reference detected for object ${myObject.id}`);
+         return relations;
+      }
+      visited.add(myObject.id);
+
+      // break out and compact the connected data
+      let connections = myObject.connectFields();
+      connections.forEach((connField) => {
+         let connHash = {};
+         let relationName = connField.relationName();
+
+         // gather all the connected data for this field
+         for (let I = 0; I < content.length; I++) {
+            let row = content[I];
+            if (row[relationName]) {
+               if (Array.isArray(row[relationName])) {
+                  row[relationName].forEach((r) => {
+                     let rval = connField.getRelationValue(r);
+                     if (rval != null && !connHash[rval]) {
+                        connHash[rval] = r;
+                     }
+                  });
+               } else {
+                  let r = row[relationName];
+                  let rval = connField.getRelationValue(r);
+                  if (rval != null && !connHash[rval]) {
+                     connHash[rval] = r;
+                  }
+               }
+            }
+         }
+
+         let connObject = connField.datasourceLink;
+         let values = Object.values(connHash);
+         if (values.length > 0) {
+            this.csvPackMergeRelations(relations, connObject.id, connHash);
+
+            let connRelations = this.csvPackGetRelations(
+               connObject,
+               values,
+               visited
+            );
+
+            // merge these into my relations
+            Object.keys(connRelations).forEach((id) => {
+               this.csvPackMergeRelations(relations, id, connRelations[id]);
+            });
+         }
+      });
+      visited.delete(myObject.id);
+      return relations;
+   }
+
+   csvPackReIndexRelations(relations) {
+      Object.keys(relations).forEach((id) => {
+         Object.keys(relations[id]).forEach((cid, indx) => {
+            relations[id][cid]._csvID = indx;
+         });
+      });
+   }
+
+   csvPackReEncodeRelations(relations, myObject, content) {
+      let connections = myObject.connectFields();
+      connections.forEach((connField) => {
+         let relationName = connField.relationName();
+         let connObject = connField.datasourceLink;
+         let connHash = relations[connObject.id];
+
+         // now reencode the connection data to reference the new _csvID
+         for (let I = 0; I < content.length; I++) {
+            let row = content[I];
+            let ids = [];
+            let hasRelationData = false;
+            if (row[relationName]) {
+               hasRelationData = true;
+               if (Array.isArray(row[relationName])) {
+                  row[relationName].forEach((r) => {
+                     let rval = connField.getRelationValue(r);
+                     if (
+                        rval != null &&
+                        connHash[rval] &&
+                        connHash[rval]._csvID != null
+                     ) {
+                        ids.push(connHash[rval]._csvID);
+                     }
+                  });
+               } else {
+                  let r = row[relationName];
+                  let rval = connField.getRelationValue(r);
+                  if (
+                     rval != null &&
+                     connHash[rval] &&
+                     connHash[rval]._csvID != null
+                  ) {
+                     ids.push(connHash[rval]._csvID);
+                  }
+               }
+            }
+            // only make an update if it did have relation data
+            if (hasRelationData) {
+               row[connField.columnName] = JSON.stringify(ids);
+               delete row[relationName];
+            }
+         }
+      });
+   }
+
+   csvPackFinalModifications(myObject, content) {
+      let connPK = myObject.PK();
+      const isPKID = connPK === "id";
+      content.forEach((c) => {
+         if (!isPKID && c.id == c[connPK]) {
+            delete c.id;
+         }
+
+         // if translations are present return them to an object
+         if (c.translations && typeof c.translations != "string") {
+            c.translations = JSON.stringify(c.translations);
+         }
+      });
+   }
+
    /**
     * @method csvPack
     * pack the data into a csv format
@@ -732,7 +895,7 @@ module.exports = class ABModelCore {
     *                  total_bytes:xx,
     *                }
     */
-   csvPack(data) {
+   async csvPack(data, batchSize = 10000, jobID) {
       // data should be the original json data packet we want to send
       // {
       //   data: [{obj1}, {obj2}, ... {objN}],
@@ -749,20 +912,25 @@ module.exports = class ABModelCore {
       //   }
       //   total_bytes:xx,
       // }
+
+      if (!data || typeof data !== "object") {
+         throw new Error("csvPack: Invalid data parameter");
+      }
+      if (data.data === undefined) {
+         throw new Error("csvPack: data.data is required");
+      }
+
       let packedData = { data: "", relations: {} };
       let myObject = this.object;
 
       let content = data.data;
-      const firstRow = content[0];
-
-      // Note: CSV will refer to the columns at the first row in a list to generate CSV columns.
-      // if the first row were missing somecolumns and the next rows has those columns.
-      // they will lost those columns and values
-      if(firstRow) {
-        const columnNames = Object.keys(firstRow);
-        for (const missingField of myObject.fields(f => columnNames.indexOf(f.columnName) === -1))
-           firstRow[missingField.columnName] = undefined;
+      if (!content || (Array.isArray(content) && content.length === 0)) {
+         // Return the original data if there is no content to pack
+         // existing code will handle this fine.
+         return data;
       }
+      this.csvPackPrepareFirstRow(myObject, content);
+
       let returnType = "array";
       if (!Array.isArray(content)) {
          returnType = "single";
@@ -770,115 +938,41 @@ module.exports = class ABModelCore {
       }
       content = content.filter((row) => !this.AB.isNil(row));
 
-      // stringify any potential json data
-      // starting with List data
-      let keys = ["list", "json"];
-      let stringifyFields = myObject.fields((f) => keys.indexOf(f.key) > -1);
-      stringifyFields.forEach((f) => {
-         for (let I = 0; I < content.length; I++) {
-            let row = content[I];
-            if (row[f.columnName]) {
-               row[f.columnName] = JSON.stringify(row[f.columnName]);
-            }
+      this.csvPackStringifyFields(myObject, content);
+
+      let relations = this.csvPackGetRelations(myObject, content);
+      // { objectID: { row.id: entryJSON}}
+
+      this.csvPackReIndexRelations(relations);
+
+      // now reencode the connection data to reference the new _csvID
+      // do this for the main content
+      this.csvPackReEncodeRelations(relations, myObject, content);
+      this.csvPackFinalModifications(myObject, content);
+
+      // do this for the relations as well
+      let allIds = Object.keys(relations);
+      for (let i = 0; i < allIds.length; i++) {
+         let id = allIds[i];
+         let relatedObj = this.AB.objectByID(id);
+         if (relatedObj) {
+            let values = Object.values(relations[id]);
+            this.csvPackReEncodeRelations(relations, relatedObj, values);
+            this.csvPackFinalModifications(relatedObj, values);
+            packedData.relations[id] = await this.AB.jsonToCsvBatched(
+               values,
+               batchSize,
+               jobID
+            );
          }
-      });
-
-      // break out and compact the connected data
-      let connections = myObject.connectFields();
-      connections.forEach((connField) => {
-         let connHash = {};
-         let relationName = connField.relationName();
-         let connPK = connField.datasourceLink.PK();
-
-         // gather all the connected data for this field
-         for (let I = 0; I < content.length; I++) {
-            let row = content[I];
-            if (row[relationName]) {
-               if (Array.isArray(row[relationName])) {
-                  row[relationName].forEach((r) => {
-                     if (!connHash[r.id]) {
-                        connHash[r.id] = r;
-                     }
-                  });
-               } else {
-                  let r = row[relationName];
-                  if (!connHash[r.id]) {
-                     connHash[r.id] = r;
-                  }
-               }
-            }
-         }
-
-         // assign a smaller id value
-         Object.keys(connHash).forEach((id, indx) => {
-            connHash[id]._csvID = indx;
-         });
-
-         // now reencode the connection data to reference the new _csvID
-         for (let I = 0; I < content.length; I++) {
-            let row = content[I];
-            let ids = [];
-            let hasRelationData = false;
-            if (row[relationName]) {
-               hasRelationData = true;
-               if (Array.isArray(row[relationName])) {
-                  row[relationName].forEach((r) => {
-                     ids.push(connHash[r.id]._csvID);
-                  });
-               } else {
-                  let r = row[relationName];
-                  ids.push(connHash[r.id]._csvID);
-               }
-            }
-            // only make an update if it did have relation data
-            if (hasRelationData) {
-               row[connField.columnName] = JSON.stringify(ids);
-               delete row[relationName];
-            }
-         }
-
-         let connData = Object.values(connHash);
-         const isPKID = connPK === "id";
-         connData.forEach((c) => {
-            if (!isPKID && c.id == c[connPK]) {
-               delete c.id;
-            }
-
-            // if translations are present return them to an object
-            if (c.translations) {
-               c.translations = JSON.stringify(c.translations);
-            }
-         });
-         let connDataCsv = this.AB.jsonToCsv(connData);
-         packedData.relations[connField.id] = connDataCsv;
-      });
-
-      // final data preparations for csv encoding
-      const isPKID = myObject.PK();
-      for (let I = 0; I < content.length; I++) {
-         let row = content[I];
-         // client side .normalizeData() should repopulate .id
-         !isPKID && delete row.id;
-
-         // we don't use .properties anymore, right?
-         delete row.properties;
-
-         // make sure embedded translations are stringified.
-         if (row.translations) {
-            row.translations = JSON.stringify(row.translations);
-         }
-
-         // special case for relations that are empty
-         connections.forEach((connField) => {
-            let relationName = connField.relationName();
-            if (row[relationName] === null) {
-               delete row[relationName];
-            }
-         });
       }
 
       // now convert the data to CSV
-      packedData.data = this.AB.jsonToCsv(content);
+      packedData.data = await this.AB.jsonToCsvBatched(
+         content,
+         batchSize,
+         jobID
+      );
       packedData.type = returnType; // single or array
 
       let newData = {};
@@ -889,6 +983,132 @@ module.exports = class ABModelCore {
       });
       newData.csv_packed = packedData;
       return newData;
+   }
+
+   csvUnpackUnstringifyFields(myObject, data) {
+      let connPK = myObject.PK();
+      let keyFields = ["list", "boolean", "number", "json"];
+      let parseFields = myObject.fields((f) => keyFields.indexOf(f.key) > -1);
+      data.forEach((row) => {
+         // unstringify any list,bool,number fields
+         parseFields.forEach((f) => {
+            let val = row[f.columnName];
+            if (val && typeof val == "string") {
+               try {
+                  row[f.columnName] = JSON.parse(val);
+               } catch (e) {
+                  // sometimes "list" fields are not JSON parseable
+                  if (f.key != "list") {
+                     console.error(
+                        "Error parsing JSON data for column: " + f.columnName,
+                        val,
+                        e
+                     );
+                  }
+               }
+            }
+         });
+
+         // if translations are present return them to an object
+         if (row.translations) {
+            try {
+               row.translations = JSON.parse(row.translations);
+            } catch (e) {
+               // just leave it as it is
+            }
+         }
+
+         // readd .id to the row
+         if (!row.id) {
+            if (row[connPK]) {
+               row.id = row[connPK];
+            }
+         }
+      });
+   }
+
+   csvUnpackReconnectRelations(relations, myObject, data) {
+      let connections = myObject.connectFields();
+      connections.forEach((connField) => {
+         let relationName = connField.relationName();
+
+         let relationObject = connField.datasourceLink;
+         let connHash = relations[relationObject.id];
+         if (connHash) {
+            data.forEach((row) => {
+               let ids = [];
+               let populatedData = [];
+               let entries = [];
+               if (typeof row[connField.columnName] !== "undefined") {
+                  try {
+                     // ok, we know this is a possibility, so just skip it
+                     if (row[connField.columnName] !== "") {
+                        entries = JSON.parse(row[connField.columnName]);
+                     }
+                  } catch (e) {
+                     if (row[connField.columnName] == "") {
+                        // not a problem, just no data
+                     } else {
+                        // this might be a situation on the server where
+                        // row[columnName] has a value, but row[relationName] is empty.
+                        if (typeof row[relationName] == "undefined") {
+                           row[relationName] = null;
+                        }
+                        // console.error(
+                        //    "Error parsing JSON data for column: " +
+                        //       connField.columnName,
+                        //    e
+                        // );
+                     }
+                  }
+                  if (!Array.isArray(entries)) {
+                     entries = [entries];
+                  }
+                  entries.forEach((id) => {
+                     if (id != null && connHash[id]) {
+                        let connEntry = connHash[id];
+                        ids.push(connField.getRelationValue(connEntry));
+                        // Alternatively, we could remove the row[columnName] and let
+                        // normalizeData() repopulate it.
+                        populatedData.push(connEntry);
+                     } else if (id != null) {
+                        console.warn(
+                           `Missing relation entry for _csvID: ${id}`
+                        );
+                     }
+                  });
+                  if (connField.linkType() == "many") {
+                     row[connField.columnName] = ids;
+                     row[connField.relationName()] = populatedData;
+                  } else {
+                     row[connField.columnName] = ids[0] ?? null;
+                     row[connField.relationName()] = populatedData[0] ?? null;
+                  }
+               }
+            });
+         }
+      });
+
+      // final pass to clear up stringified relation data
+      data.forEach((row) => {
+         connections.forEach((connField) => {
+            // many connections must be an array, not "[]"
+            if (connField.linkType() == "many") {
+               let val = row[connField.columnName];
+               if (val && typeof val == "string") {
+                  row[connField.columnName] = JSON.parse(val);
+               }
+            }
+         });
+      });
+   }
+
+   csvUnpackClearCSVID(relations) {
+      Object.keys(relations).forEach((id) => {
+         Object.keys(relations[id]).forEach((cid) => {
+            delete relations[id][cid]._csvID;
+         });
+      });
    }
 
    /**
@@ -915,6 +1135,12 @@ module.exports = class ABModelCore {
       //   data: [{obj1}, {obj2}, ... {objN}],
       //   total_bytes:xx,
       // }
+      if (!data || !data.csv_packed) {
+         throw new Error("csvUnpack: Invalid data format - csv_packed missing");
+      }
+      if (typeof data.csv_packed.data !== "string") {
+         throw new Error("csvUnpack: Invalid csv_packed.data format");
+      }
 
       let myObject = this.object;
       let parseResult = this.AB.csvToJson(data.csv_packed.data);
@@ -934,115 +1160,37 @@ module.exports = class ABModelCore {
       }
       let jsonData = parseResult.data;
 
-      let keyFields = ["list", "boolean", "number", "json"];
-      let parseFields = myObject.fields((f) => keyFields.indexOf(f.key) > -1);
-      jsonData.forEach((row) => {
-         // unstringify any list,bool,number fields
-         parseFields.forEach((f) => {
-            let val = row[f.columnName];
-            if (val && typeof val == "string") {
-               try {
-                  row[f.columnName] = JSON.parse(val);
-               } catch (e) {
-                  console.error(
-                     "Error parsing JSON data for column: " + f.columnName,
-                     val,
-                     e
-                  );
-               }
-            }
-         });
+      let relations = {};
+      Object.keys(data.csv_packed.relations).forEach((id) => {
+         relations[id] = this.AB.csvToJson(data.csv_packed.relations[id]).data;
+      });
 
-         // if translations are present return them to an object
-         if (row.translations) {
-            row.translations = JSON.parse(row.translations);
+      this.csvUnpackUnstringifyFields(myObject, jsonData);
+      Object.keys(relations).forEach((id) => {
+         let relatedObj = this.AB.objectByID(id);
+         if (relatedObj) {
+            this.csvUnpackUnstringifyFields(relatedObj, relations[id]);
+            // to hash by _csvID
+            let hash = {};
+            relations[id].forEach((c) => {
+               hash[c._csvID] = c;
+            });
+            relations[id] = hash;
          }
       });
 
-      let connections = myObject.connectFields();
-      connections.forEach((connField) => {
-         let relationName = connField.relationName();
-
-         if (data.csv_packed.relations[connField.id]) {
-            let connDataParseResult = this.AB.csvToJson(
-               data.csv_packed.relations[connField.id]
-            );
-            let connData = connDataParseResult.data;
-
-            let connHash = {};
-            let connPK = connField.datasourceLink.PK();
-            connData.forEach((c) => {
-               if (!c.id) {
-                  c.id = c[connPK];
-               }
-               connHash[c._csvID] = c;
-            });
-
-            jsonData.forEach((row) => {
-               let ids = [];
-               let populatedData = [];
-               let entries = [];
-               try {
-                  // ok, we know this is a possibility, so just skip it
-                  if (row[connField.columnName] !== "") {
-                     entries = JSON.parse(row[connField.columnName]);
-                  }
-               } catch (e) {
-                  if (row[connField.columnName] == "") {
-                     // not a problem, just no data
-                  } else {
-                     // this might be a situation on the server where
-                     // row[columnName] has a value, but row[relationName] is empty.
-                     if (typeof row[relationName] == "undefined") {
-                        row[relationName] = null;
-                     }
-                     // console.error(
-                     //    "Error parsing JSON data for column: " +
-                     //       connField.columnName,
-                     //    e
-                     // );
-                  }
-               }
-               if (!Array.isArray(entries)) {
-                  entries = [entries];
-               }
-               entries.forEach((id) => {
-                  if (connHash[id]) {
-                     let connEntry = connHash[id];
-                     ids.push(connField.getRelationValue(connEntry));
-                     // Alternatively, we could remove the row[columnName] and let
-                     // normalizeData() repopulate it.
-                     populatedData.push(connEntry);
-                  }
-               });
-               if (connField.linkType() == "many") {
-                  row[connField.columnName] = ids;
-                  row[connField.relationName()] = populatedData;
-               } else {
-                  row[connField.columnName] = ids[0];
-                  row[connField.relationName()] = populatedData[0];
-               }
-            });
-
-            // now clear the ._csvID from the data
-            Object.keys(connHash).forEach((id) => {
-               delete connHash[id]._csvID;
-            });
+      // now reconnect the data
+      Object.keys(relations).forEach((id) => {
+         let relatedObj = this.AB.objectByID(id);
+         if (relatedObj) {
+            let values = Object.values(relations[id]);
+            this.csvUnpackReconnectRelations(relations, relatedObj, values);
          }
       });
 
-      // final pass to clear up stringified relation data
-      jsonData.forEach((row) => {
-         connections.forEach((connField) => {
-            // many connections must be an array, not "[]"
-            if (connField.linkType() == "many") {
-               let val = row[connField.columnName];
-               if (val && typeof val == "string") {
-                  row[connField.columnName] = JSON.parse(val);
-               }
-            }
-         });
-      });
+      this.csvUnpackReconnectRelations(relations, myObject, jsonData);
+
+      this.csvUnpackClearCSVID(relations);
 
       let returnData = {};
       Object.keys(data).forEach((key) => {
