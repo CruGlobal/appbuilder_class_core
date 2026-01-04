@@ -728,7 +728,7 @@ module.exports = class ABModelCore {
    csvPackStringifyFields(myObject, content) {
       // stringify any potential json data
       // starting with List data
-      let keys = ["list", "json"];
+      let keys = ["list", "json", "file"];
       let stringifyFields = myObject.fields((f) => keys.indexOf(f.key) > -1);
       stringifyFields.forEach((f) => {
          for (let I = 0; I < content.length; I++) {
@@ -987,10 +987,10 @@ module.exports = class ABModelCore {
 
    csvUnpackUnstringifyFields(myObject, data) {
       let connPK = myObject.PK();
-      let keyFields = ["list", "boolean", "number", "json"];
+      let keyFields = ["list", "boolean", "number", "json", "file"];
       let parseFields = myObject.fields((f) => keyFields.indexOf(f.key) > -1);
       data.forEach((row) => {
-         // unstringify any list,bool,number fields
+         // unstringify any list,bool,number,file fields
          parseFields.forEach((f) => {
             let val = row[f.columnName];
             if (val && typeof val == "string") {
