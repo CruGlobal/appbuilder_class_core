@@ -90,7 +90,7 @@ export default class FilterComplexCore extends ABComponent {
 
       super(null, idBase, AB);
 
-      this.Account = { username: "??" };
+      this.Account = { username: "??", email: "??" };
       this._settings = {};
       this.condition = {};
       // const batchName; // we need to revert to this default when switching away from a in/by query field
@@ -421,6 +421,21 @@ export default class FilterComplexCore extends ABComponent {
             break;
          default:
             result = this.queryFieldValid(value, rule, compareValue);
+            break;
+      }
+
+      return result;
+   }
+
+   emailValid(value, rule, compareValue) {
+      let result = false;
+
+      switch (rule) {
+         case "is_current_email":
+            result = value == compareValue;
+            break;
+         case "is_not_current_email":
+            result = value != compareValue;
             break;
       }
 
@@ -875,10 +890,11 @@ export default class FilterComplexCore extends ABComponent {
                   processFieldKeys = ["calculate", "formula", "number"];
 
                   break;
-
+               case "email":
+                  conditions = conditions.concat(this.fieldsAddFiltersEmail(f));
+               // eslint-disable-next-line no-fallthrough
                case "string":
                case "LongText":
-               case "email":
                case "AutoIndex":
                   conditions = conditions.concat(
                      this.fieldsAddFiltersString(f)
@@ -1150,6 +1166,32 @@ export default class FilterComplexCore extends ABComponent {
             value: booleanConditions[condKey],
             batch: "none",
             handler: (a, b) => this.booleanValid(a, condKey, b),
+         });
+      }
+
+      return result;
+   }
+
+   fieldsAddFiltersEmail(field) {
+      let userConditions = {
+         is_current_email: {
+            batch: "none",
+            label: this.labels.component.isCurrentUserEmailCondition,
+         },
+         is_not_current_email: {
+            batch: "none",
+            label: this.labels.component.isNotCurrentUserEmailCondition,
+         },
+      };
+
+      let result = [];
+
+      for (let condKey in userConditions) {
+         result.push({
+            id: condKey,
+            value: userConditions[condKey].label,
+            batch: userConditions[condKey].batch,
+            handler: (a, b) => this.emailValid(a, condKey, b),
          });
       }
 

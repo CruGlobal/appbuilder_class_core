@@ -257,6 +257,9 @@ export default class ABDataCollectionCore extends ABMLClass {
       // Skip CSV packing
       this.settings.skipPack = values?.settings?.skipPack ?? false;
 
+      // Selected fields
+      this.settings.select = values?.settings?.select ?? null;
+
       this.__datasource = null;
       // {obj} .__datasource
       // the reference to the ABObject/ABObjectQuery that this ABDataCollection
@@ -2439,6 +2442,9 @@ export default class ABDataCollectionCore extends ABMLClass {
          sort: sorts,
          populate: this.shouldPopulate,
       };
+
+      // Select specific fields
+      if (this.settings?.select) cond.select = this.settings.select;
 
       // Skip CSV packing
       if (this.settings?.skipPack) cond.skipPack = this.settings.skipPack;
