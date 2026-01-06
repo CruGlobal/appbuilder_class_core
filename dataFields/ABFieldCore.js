@@ -323,7 +323,7 @@ module.exports = class ABFieldCore extends ABMLClass {
 
    /**
     * @method format
-    * return display text to detail comonent and define label of object
+    * return display text to detail component and define label of object
     *
     * @param {Object} rowData - data
     */
