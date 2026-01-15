@@ -5,6 +5,8 @@ on:
     branches: [v2]
 permissions:
   contents: write
+  pages: write
+  id-token: write
 jobs:
   call-get-label:
     name: Label
@@ -18,8 +20,8 @@ jobs:
     uses: ./.github/workflows/e2e-tests.yml
   call-bump-version:
     name: Version
-    # Only run if tests pass 
-    needs: [ call-get-label, call-e2e-tests ]
+    # Only run if tests pass
+    needs: [call-get-label, call-e2e-tests]
     uses: ./.github/workflows/bump-version.yml
     with:
       ref: ${{ github.ref }}
@@ -31,7 +33,7 @@ jobs:
     with:
       tag: v${{ needs.call-bump-version.outputs.new_version }}
   call-dispatch-updates:
-    needs: [ call-bump-version, call-get-label ]
+    needs: [call-bump-version, call-get-label]
     uses: CruGlobal/.github/.github/workflows/dispatch-update.yml@main
     with:
       dispatch_repos: '["ab_platform_web","appbuilder_platform_service"]'
@@ -41,4 +43,3 @@ jobs:
       app_id: ${{ vars.GS_DEV_APP_ID }}
     secrets:
       app_secret: ${{ secrets.GS_DEV_APP_PK }}
-  
