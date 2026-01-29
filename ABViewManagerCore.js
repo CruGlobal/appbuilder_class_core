@@ -27,12 +27,12 @@ var AllViews = [
    require("../platform/views/ABViewImage"),
    require("../platform/views/ABViewLabel"),
    require("../platform/views/ABViewLayout"),
-   require("../platform/views/ABViewList"),
+   // require("../platform/views/ABViewList"),
    require("../platform/views/ABViewMenu"),
    require("../platform/views/ABViewPage"),
    require("../platform/views/ABViewPDFImporter"),
    require("../platform/views/ABViewPivot"),
-   require("../platform/views/ABViewTab"),
+   // require("../platform/views/ABViewTab"),
    require("../platform/views/ABViewText"),
 
    //

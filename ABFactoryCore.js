@@ -777,6 +777,13 @@ class ABFactory extends EventEmitter {
       return api;
    }
 
+   pluginLocalLoad() {
+      // This is a placeholder for a local plugin load.
+      // The platform version of this method will load the plugins from
+      // /platform/plugins/local/
+      return Promise.resolve();
+   }
+
    pluginRegister(plugin) {
       let pluginClass = plugin(this.pluginAPI());
       if (Array.isArray(pluginClass)) {
