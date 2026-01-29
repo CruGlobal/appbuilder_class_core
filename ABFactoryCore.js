@@ -279,10 +279,11 @@ class ABFactory extends EventEmitter {
       }
    }
 
-   init() {
+   async init() {
       // BEFORE Definitions are loaded,
       // make sure any local Plugins are loaded.
-      this.ClassManager.registerLocalPlugins(this.pluginAPI());
+      // this.ClassManager.registerLocalPlugins(this.pluginAPI());
+      await this.pluginLocalLoad();
 
       let allDefinitions = Object.keys(this._definitions).map(
          (k) => this._definitions[k]
