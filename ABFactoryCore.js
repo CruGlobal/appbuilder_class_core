@@ -279,10 +279,11 @@ class ABFactory extends EventEmitter {
       }
    }
 
-   init() {
+   async init() {
       // BEFORE Definitions are loaded,
       // make sure any local Plugins are loaded.
-      this.ClassManager.registerLocalPlugins(this.pluginAPI());
+      // this.ClassManager.registerLocalPlugins(this.pluginAPI());
+      await this.pluginLocalLoad();
 
       let allDefinitions = Object.keys(this._definitions).map(
          (k) => this._definitions[k]
@@ -775,6 +776,13 @@ class ABFactory extends EventEmitter {
       api.AB = this;
       api.platform = this.platform ?? "service";
       return api;
+   }
+
+   pluginLocalLoad() {
+      // This is a placeholder for a local plugin load.
+      // The platform version of this method will load the plugins from
+      // /platform/plugins/local/
+      return Promise.resolve();
    }
 
    pluginRegister(plugin) {
