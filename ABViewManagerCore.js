@@ -33,7 +33,7 @@ var AllViews = [
    require("../platform/views/ABViewPDFImporter"),
    require("../platform/views/ABViewPivot"),
    // require("../platform/views/ABViewTab"),
-   require("../platform/views/ABViewText"),
+   // require("../platform/views/ABViewText"),
 
    //
    // Special Editors
