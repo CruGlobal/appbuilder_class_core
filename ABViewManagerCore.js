@@ -44,9 +44,9 @@ var AllViews = [
    require("../platform/views/ABViewScheduler"),
 
    //
-   // Detail Components
+   // Detail Components (built-in Detail 由 plugin view_detail 提供，此处不注册)
    //
-   require("../platform/views/ABViewDetail"),
+   // require("../platform/views/ABViewDetail"),
    require("../platform/views/ABViewDetailCheckbox"),
    require("../platform/views/ABViewDetailConnect"),
    require("../platform/views/ABViewDetailCustom"),
