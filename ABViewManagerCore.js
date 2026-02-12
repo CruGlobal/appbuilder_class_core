@@ -28,7 +28,7 @@ var AllViews = [
    require("../platform/views/ABViewLabel"),
    require("../platform/views/ABViewLayout"),
    // require("../platform/views/ABViewList"),
-   // require("../platform/views/ABViewMenu"), // 仅保留 Menu(plugin)，与 List/Tab/Detail 一致
+   require("../platform/views/ABViewMenu"),
    require("../platform/views/ABViewPage"),
    require("../platform/views/ABViewPDFImporter"),
    require("../platform/views/ABViewPivot"),
@@ -44,7 +44,7 @@ var AllViews = [
    require("../platform/views/ABViewScheduler"),
 
    //
-   // Detail Components (built-in Detail 由 plugin view_detail 提供，此处不注册)
+   // Detail Components
    //
    // require("../platform/views/ABViewDetail"),
    require("../platform/views/ABViewDetailCheckbox"),
@@ -154,7 +154,7 @@ module.exports = class ABViewManagerCore {
    }
 
    /**
-    * 使用显式 key 注册视图类，避免依赖 common().key（如 Menu 插件需用 menu_plugin 与内置 menu 区分）
+    * Register view class with explicit key.
     */
    static addViewClassWithKey(key, View) {
       if (key) Views[key] = View;
