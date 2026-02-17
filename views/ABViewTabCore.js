@@ -67,7 +67,6 @@ module.exports = class ABViewTabCore extends ABViewWidget {
                label: tabName,
                tabicon: tabIcon,
             },
-            this.application,
             this
          )
          .save();
