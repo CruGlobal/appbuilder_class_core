@@ -25,7 +25,6 @@ var AllViews = [
    require("../platform/views/ABViewDocxBuilder"),
    require("../platform/views/ABViewGrid"),
    require("../platform/views/ABViewImage"),
-   require("../platform/views/ABViewLabel"),
    require("../platform/views/ABViewLayout"),
    // require("../platform/views/ABViewList"),
    require("../platform/views/ABViewMenu"),
