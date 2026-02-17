@@ -41,7 +41,6 @@ module.exports = class ABViewLayoutCore extends ABViewWidget {
             {
                key: ABViewContainer.common().key,
             },
-            this.application,
             this
          )
       );
