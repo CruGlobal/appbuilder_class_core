@@ -1076,7 +1076,7 @@ class ABFactory extends EventEmitter {
       if (!this._mockApp) {
          this._mockApp = this.applicationNew({});
       }
-      return this._mockApp.viewNew(values, this._mockApp);
+      return this._mockApp.viewNew(values, null);
    }
 
    //
