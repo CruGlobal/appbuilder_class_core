@@ -31,7 +31,6 @@ module.exports = class ABViewConditionalContainerCore extends ABViewContainer {
                   removable: false,
                },
             },
-            application,
             this
          );
 
@@ -47,7 +46,6 @@ module.exports = class ABViewConditionalContainerCore extends ABViewContainer {
                   removable: false,
                },
             },
-            application,
             this
          );
 

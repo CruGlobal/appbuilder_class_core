@@ -994,12 +994,14 @@ module.exports = class ABApplicationCore extends ABMLClass {
    /**
     * @method viewNew()
     *
-    * return an instance of a new (unsaved) ABView.
+    * return an instance of a new (unsaved) ABView tied to this ABApplication.
     *
+    * @param {object} values  view definition/settings
+    * @param {ABView} [parent=null]  parent view of the new view
     * @return {ABView}
     */
-   viewNew(values, application, parent) {
-      return this.ViewManager.newView(values, application, parent);
+   viewNew(values, parent = null) {
+      return this.ViewManager.newView(values, this, parent);
    }
 
    ///

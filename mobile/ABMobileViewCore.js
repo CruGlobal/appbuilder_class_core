@@ -67,11 +67,7 @@ module.exports = class ABMobileViewCore extends ABMLClass {
     */
    static newInstance(application, parent) {
       // return a new instance from ABViewManager:
-      return application.viewNew(
-         { key: this.common().key },
-         application,
-         parent
-      );
+      return application.viewNew({ key: this.common().key }, parent);
    }
 
    viewKey() {
@@ -210,7 +206,7 @@ module.exports = class ABMobileViewCore extends ABMLClass {
       (values.viewIDs || []).forEach((id) => {
          var def = this.AB.definitionByID(id);
          if (def) {
-            views.push(this.application.viewNew(def, this.application, this));
+            views.push(this.application.viewNew(def, this));
          } else {
             this.__missingViews.push(id);
          }
@@ -552,12 +548,8 @@ module.exports = class ABMobileViewCore extends ABMLClass {
     * @method viewNew()
     * @return {ABView}
     */
-   viewNew(values, application, parent) {
-      return this.application.viewNew(
-         values,
-         application || this.application,
-         parent || this
-      );
+   viewNew(values, parent) {
+      return this.application.viewNew(values, parent || this);
    }
 
    /**
@@ -811,7 +803,7 @@ module.exports = class ABMobileViewCore extends ABMLClass {
       }
 
       // copy from settings
-      let result = this.viewNew(config, this.application, parent);
+      let result = this.viewNew(config, parent);
 
       // change id
       if (parent == null) {
@@ -885,7 +877,7 @@ module.exports = class ABMobileViewCore extends ABMLClass {
       }
 
       // copy from settings
-      let result = this.application.viewNew(config, this.application, parent);
+      let result = this.application.viewNew(config, parent);
 
       // keep the parent
       result.parent = parent || this.parent;
