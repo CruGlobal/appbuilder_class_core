@@ -309,7 +309,14 @@ class ABFactory extends EventEmitter {
          objTypes.forEach((def) => {
             let { keyList, keyFn } = this.objectKeysByDef(def);
             if (keyList) {
-               this[keyList].push(this[keyFn](def.json));
+               try {
+                  this[keyList].push(this[keyFn](def.json));
+               } catch (err) {
+                  console.error(
+                     `ABFactory.init: failed to create ${type} [${def.id}]:`,
+                     err
+                  );
+               }
             }
          });
       });
