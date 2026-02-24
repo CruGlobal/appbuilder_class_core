@@ -322,7 +322,7 @@ module.exports = class ABViewPageCore extends ABViewContainer {
       // NOTE: this returns a new ABView component.
       // when creating a new page, the 3rd param should be null, to signify
       // the top level component.
-      var page = this.application.viewNew(values, this.application, null);
+      var page = this.application.viewNew(values, null);
       page.parent = this;
       return page;
    }

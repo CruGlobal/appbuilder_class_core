@@ -20,11 +20,11 @@ var AllViews = [
    require("../platform/views/ABViewCSVExporter"),
    require("../platform/views/ABViewCSVImporter"),
    require("../platform/views/ABViewDataFilter"),
-   require("../platform/views/ABViewDataSelect"),
+   // require("../platform/views/ABViewDataSelect"),
    require("../platform/views/ABViewDataview"),
    require("../platform/views/ABViewDocxBuilder"),
    require("../platform/views/ABViewGrid"),
-   require("../platform/views/ABViewImage"),
+   // require("../platform/views/ABViewImage"),
    require("../platform/views/ABViewLabel"),
    require("../platform/views/ABViewLayout"),
    // require("../platform/views/ABViewList"),
@@ -33,7 +33,7 @@ var AllViews = [
    require("../platform/views/ABViewPDFImporter"),
    require("../platform/views/ABViewPivot"),
    // require("../platform/views/ABViewTab"),
-   require("../platform/views/ABViewText"),
+   // require("../platform/views/ABViewText"),
 
    //
    // Special Editors
