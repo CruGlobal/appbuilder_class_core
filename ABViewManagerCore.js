@@ -7,7 +7,7 @@
 
 var AllViews = [
    require("../platform/views/ABView"),
-   require("../platform/views/ABViewCarousel"),
+   // require("../platform/views/ABViewCarousel"),
    require("../platform/views/ABViewChart"),
    require("../platform/views/ABViewChartArea"),
    require("../platform/views/ABViewChartBar"),
