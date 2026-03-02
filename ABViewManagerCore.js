@@ -58,7 +58,7 @@ var AllViews = [
    //
    // Form Components
    //
-   // require("../platform/views/ABViewForm"),
+   require("../platform/views/ABViewForm"),
    require("../platform/views/ABViewFormButton"),
    require("../platform/views/ABViewFormCheckbox"),
    require("../platform/views/ABViewFormConnect"),
