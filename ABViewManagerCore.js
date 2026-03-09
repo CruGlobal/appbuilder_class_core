@@ -18,7 +18,7 @@ var AllViews = [
    require("../platform/views/ABViewConnectDataFilter"),
    require("../platform/views/ABViewContainer"),
    // require("../platform/views/ABViewCSVExporter"),
-   require("../platform/views/ABViewCSVImporter"),
+   // require("../platform/views/ABViewCSVImporter"),
    require("../platform/views/ABViewDataFilter"),
    // require("../platform/views/ABViewDataSelect"),
    require("../platform/views/ABViewDataview"),
