@@ -7,7 +7,7 @@
 
 var AllViews = [
    require("../platform/views/ABView"),
-   require("../platform/views/ABViewCarousel"),
+   // require("../platform/views/ABViewCarousel"),
    require("../platform/views/ABViewChart"),
    require("../platform/views/ABViewChartArea"),
    require("../platform/views/ABViewChartBar"),
@@ -25,7 +25,7 @@ var AllViews = [
    require("../platform/views/ABViewDocxBuilder"),
    require("../platform/views/ABViewGrid"),
    // require("../platform/views/ABViewImage"),
-   require("../platform/views/ABViewLabel"),
+   // require("../platform/views/ABViewLabel"),
    // require("../platform/views/ABViewLayout"),
    // require("../platform/views/ABViewList"),
    require("../platform/views/ABViewMenu"),
