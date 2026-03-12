@@ -1,6 +1,6 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
-module.exports = class ABViewDetailComponentCore extends ABViewWidget {
+export default class ABViewDetailComponentCore extends ABViewWidget {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -60,4 +60,4 @@ module.exports = class ABViewDetailComponentCore extends ABViewWidget {
       if (currData) return currData[field.columnName];
       else return null;
    }
-};
+}

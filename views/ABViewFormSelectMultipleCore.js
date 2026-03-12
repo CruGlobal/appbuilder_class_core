@@ -1,4 +1,4 @@
-const ABViewFormItem = require("../../platform/views/ABViewFormItem");
+import ABViewFormItem from "../../platform/views/ABViewFormItem.js";
 
 const ABViewFormSelectMultiplePropertyComponentDefaults = {
    type: "multicombo", // 'richselect' or 'radio'
@@ -10,13 +10,13 @@ const ABSelectMultipleDefaults = {
    labelKey: "ab.components.selectmultiple", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewFormSelectMultipleCore extends ABViewFormItem {
+export default class ABViewFormSelectMultipleCore extends ABViewFormItem {
    constructor(values, application, parent, defaultValues) {
       super(
          values,
          application,
          parent,
-         defaultValues || ABSelectMultipleDefaults
+         defaultValues || ABSelectMultipleDefaults,
       );
    }
 
@@ -35,4 +35,4 @@ module.exports = class ABViewFormSelectMultipleCore extends ABViewFormItem {
    componentList() {
       return [];
    }
-};
+}

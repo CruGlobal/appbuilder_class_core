@@ -1,4 +1,4 @@
-const ABViewDetailItem = require("../../platform/views/ABViewDetailItem");
+import ABViewDetailItem from "../../platform/views/ABViewDetailItem.js";
 
 const ABViewDetailPropertyComponentDefaults = {
    height: 0,
@@ -10,7 +10,7 @@ const ABViewDefaults = {
    labelKey: "ab.components.detail.selectivity", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewDetailSelectivityCore extends ABViewDetailItem {
+export default class ABViewDetailSelectivityCore extends ABViewDetailItem {
    /**
     * @param {obj} values  key=>value hash of ABView values
     * @param {ABApplication} application the application object this view is under
@@ -43,7 +43,7 @@ module.exports = class ABViewDetailSelectivityCore extends ABViewDetailItem {
 
       // convert from "0" => 0
       this.settings.height = parseInt(
-         this.settings.height ?? ABViewDetailPropertyComponentDefaults.height
+         this.settings.height ?? ABViewDetailPropertyComponentDefaults.height,
       );
    }
-};
+}

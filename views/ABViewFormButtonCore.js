@@ -1,4 +1,4 @@
-const ABView = require("../../platform/views/ABView");
+import ABView from "../../platform/views/ABView.js";
 
 const ABViewFormButtonPropertyComponentDefaults = {
    includeSave: true,
@@ -25,13 +25,13 @@ const ABViewFormButtonDefaults = {
    // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewFormButtonCore extends ABView {
+export default class ABViewFormButtonCore extends ABView {
    constructor(values, application, parent, defaultValues) {
       super(
          values,
          application,
          parent,
-         defaultValues || ABViewFormButtonDefaults
+         defaultValues || ABViewFormButtonDefaults,
       );
    }
 
@@ -94,24 +94,24 @@ module.exports = class ABViewFormButtonCore extends ABView {
 
       this.settings.includeSave = JSON.parse(
          (this.settings?.includeSave ?? true) &&
-            ABViewFormButtonPropertyComponentDefaults.includeSave
+            ABViewFormButtonPropertyComponentDefaults.includeSave,
       );
       this.settings.includeCancel = JSON.parse(
          this.settings.includeCancel ||
-            ABViewFormButtonPropertyComponentDefaults.includeCancel
+            ABViewFormButtonPropertyComponentDefaults.includeCancel,
       );
       this.settings.includeReset = JSON.parse(
          this.settings.includeReset ||
-            ABViewFormButtonPropertyComponentDefaults.includeReset
+            ABViewFormButtonPropertyComponentDefaults.includeReset,
       );
       this.settings.includeDelete = JSON.parse(
          this.settings.includeDelete ||
-            ABViewFormButtonPropertyComponentDefaults.includeDelete
+            ABViewFormButtonPropertyComponentDefaults.includeDelete,
       );
 
       this.settings.isDefault = JSON.parse(
          this.settings.isDefault ||
-            ABViewFormButtonPropertyComponentDefaults.isDefault
+            ABViewFormButtonPropertyComponentDefaults.isDefault,
       );
    }
 
@@ -122,4 +122,4 @@ module.exports = class ABViewFormButtonCore extends ABView {
    componentList() {
       return [];
    }
-};
+}

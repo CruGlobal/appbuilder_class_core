@@ -1,4 +1,4 @@
-const ABViewDetailItem = require("../../platform/views/ABViewDetailItem");
+import ABViewDetailItem from "../../platform/views/ABViewDetailItem.js";
 
 const ABViewDetailImagePropertyComponentDefaults = {
    height: 80,
@@ -11,7 +11,7 @@ const ABViewDetailImageDefaults = {
    labelKey: "ab.components.detail.image", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewDetailImageCore extends ABViewDetailItem {
+export default class ABViewDetailImageCore extends ABViewDetailItem {
    /**
     * @param {obj} values  key=>value hash of ABView values
     * @param {ABApplication} application the application object this view is under
@@ -22,7 +22,7 @@ module.exports = class ABViewDetailImageCore extends ABViewDetailItem {
          values,
          application,
          parent,
-         defaultValues ?? ABViewDetailImageDefaults
+         defaultValues ?? ABViewDetailImageDefaults,
       );
    }
 
@@ -50,10 +50,11 @@ module.exports = class ABViewDetailImageCore extends ABViewDetailItem {
       // convert from "0" => 0
       this.settings.height = parseInt(
          this.settings.height ||
-            ABViewDetailImagePropertyComponentDefaults.height
+            ABViewDetailImagePropertyComponentDefaults.height,
       );
       this.settings.width = parseInt(
-         this.settings.width ?? ABViewDetailImagePropertyComponentDefaults.width
+         this.settings.width ??
+            ABViewDetailImagePropertyComponentDefaults.width,
       );
    }
-};
+}

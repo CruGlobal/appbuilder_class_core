@@ -1,4 +1,4 @@
-const ABViewChartContainer = require("../../platform/views/ABViewChartContainer");
+import ABViewChartContainer from "../../platform/views/ABViewChartContainer.js";
 
 const ABViewChartLinePropertyComponentDefaults = {
    lineType: "line",
@@ -17,7 +17,7 @@ const ABViewDefaults = {
    labelKey: "Line", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewChartLineCore extends ABViewChartContainer {
+export default class ABViewChartLineCore extends ABViewChartContainer {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -53,26 +53,26 @@ module.exports = class ABViewChartLineCore extends ABViewChartContainer {
 
       this.settings.isLegend = parseInt(
          this.settings.isLegend ??
-            ABViewChartLinePropertyComponentDefaults.isLegend
+            ABViewChartLinePropertyComponentDefaults.isLegend,
       );
 
       // this.settings.chartWidth = parseInt(this.settings.chartWidth || ABViewChartLinePropertyComponentDefaults.chartWidth);
       this.settings.chartHeight = parseInt(
          this.settings.chartHeight ??
-            ABViewChartLinePropertyComponentDefaults.chartHeight
+            ABViewChartLinePropertyComponentDefaults.chartHeight,
       );
 
       this.settings.labelFontSize = parseInt(
          this.settings.labelFontSize ??
-            ABViewChartLinePropertyComponentDefaults.labelFontSize
+            ABViewChartLinePropertyComponentDefaults.labelFontSize,
       );
       this.settings.stepValue = parseInt(
          this.settings.stepValue ??
-            ABViewChartLinePropertyComponentDefaults.stepValue
+            ABViewChartLinePropertyComponentDefaults.stepValue,
       );
       this.settings.maxValue = parseInt(
          this.settings.maxValue ??
-            ABViewChartLinePropertyComponentDefaults.maxValue
+            ABViewChartLinePropertyComponentDefaults.maxValue,
       );
 
       this.translate(this, this, ["lineLabel"]);
@@ -85,4 +85,4 @@ module.exports = class ABViewChartLineCore extends ABViewChartContainer {
    componentList() {
       return [];
    }
-};
+}

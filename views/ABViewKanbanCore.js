@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewKanbanPropertyComponentDefaults = {
    dataviewID: null,
@@ -52,7 +52,7 @@ const ABViewDefaults = {
    // NOTE: will be used as L(labelKey)
 };
 
-module.exports = class ABViewKanbanCore extends ABViewWidget {
+export default class ABViewKanbanCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -85,4 +85,4 @@ module.exports = class ABViewKanbanCore extends ABViewWidget {
    static defaultValues() {
       return ABViewKanbanPropertyComponentDefaults;
    }
-};
+}

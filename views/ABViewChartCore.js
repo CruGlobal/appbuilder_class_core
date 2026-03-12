@@ -1,4 +1,4 @@
-const ABViewContainer = require("../../platform/views/ABViewContainer");
+import ABViewContainer from "../../platform/views/ABViewContainer.js";
 
 const ABViewChartPropertyComponentDefaults = {
    dataviewID: "",
@@ -19,7 +19,7 @@ const ABViewChartDefaults = {
    labelKey: "Chart", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewChartCore extends ABViewContainer {
+export default class ABViewChartCore extends ABViewContainer {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewChartDefaults);
    }
@@ -63,12 +63,12 @@ module.exports = class ABViewChartCore extends ABViewContainer {
 
       this.settings.isPercentage = parseInt(
          this.settings.isPercentage ??
-            ABViewChartPropertyComponentDefaults.isPercentage
+            ABViewChartPropertyComponentDefaults.isPercentage,
       );
 
       this.settings.showLabel = parseInt(
          this.settings.showLabel ??
-            ABViewChartPropertyComponentDefaults.showLabel
+            ABViewChartPropertyComponentDefaults.showLabel,
       );
 
       this.settings.labelPosition =
@@ -77,16 +77,16 @@ module.exports = class ABViewChartCore extends ABViewContainer {
 
       this.settings.labelWidth = parseInt(
          this.settings.labelWidth ??
-            ABViewChartPropertyComponentDefaults.labelWidth
+            ABViewChartPropertyComponentDefaults.labelWidth,
       );
 
       this.settings.height = parseInt(
-         this.settings.height ?? ABViewChartPropertyComponentDefaults.height
+         this.settings.height ?? ABViewChartPropertyComponentDefaults.height,
       );
 
       this.settings.multipleSeries = parseInt(
          this.settings.multipleSeries ??
-            ABViewChartPropertyComponentDefaults.multipleSeries
+            ABViewChartPropertyComponentDefaults.multipleSeries,
       );
 
       this.translate(this, this, ["chartLabel"]);
@@ -132,4 +132,4 @@ module.exports = class ABViewChartCore extends ABViewContainer {
 
       return obj.fieldByID(this.settings.columnValue2);
    }
-};
+}

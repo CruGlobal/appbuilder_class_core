@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewTextPropertyComponentDefaults = {
    text: "",
@@ -33,7 +33,7 @@ const ABViewDefaults = {
    // the multilingual label key for the class label
 };
 
-module.exports = class ABViewTextCore extends ABViewWidget {
+export default class ABViewTextCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
 
@@ -83,7 +83,7 @@ module.exports = class ABViewTextCore extends ABViewWidget {
 
       // convert from "0" => 0
       this.settings.height = parseInt(
-         this.settings.height || ABViewTextPropertyComponentDefaults.height
+         this.settings.height || ABViewTextPropertyComponentDefaults.height,
       );
 
       // if this is being instantiated on a read from the Property UI,
@@ -123,7 +123,7 @@ module.exports = class ABViewTextCore extends ABViewWidget {
       return label;
    }
 
-   displayText(val, componentID) {
+   displayText(val /*, _componentID */) {
       var result = this.text;
 
       let clearTemplateValue = (result) => {
@@ -194,7 +194,7 @@ module.exports = class ABViewTextCore extends ABViewWidget {
 
                result = result.replace(
                   "img",
-                  "img onerror='this.parentNode.removeChild(this);' "
+                  "img onerror='this.parentNode.removeChild(this);' ",
                );
             }
          }
@@ -211,4 +211,4 @@ module.exports = class ABViewTextCore extends ABViewWidget {
    objectLoad(object) {
       this._object = object;
    }
-};
+}

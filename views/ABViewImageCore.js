@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewImagePropertyComponentDefaults = {
    filename: "",
@@ -12,7 +12,7 @@ const ABViewDefaults = {
    labelKey: "Image", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewImageCore extends ABViewWidget {
+export default class ABViewImageCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -58,10 +58,10 @@ module.exports = class ABViewImageCore extends ABViewWidget {
 
       // convert from "0" => 0
       this.settings.width = parseInt(
-         this.settings.width || ABViewImagePropertyComponentDefaults.width
+         this.settings.width || ABViewImagePropertyComponentDefaults.width,
       );
       this.settings.height = parseInt(
-         this.settings.height || ABViewImagePropertyComponentDefaults.height
+         this.settings.height || ABViewImagePropertyComponentDefaults.height,
       );
    }
-};
+}

@@ -1,4 +1,4 @@
-const ABViewFormItem = require("../../platform/views/ABViewFormItem");
+import ABViewFormItem from "../../platform/views/ABViewFormItem.js";
 
 const ABViewFormCustomPropertyComponentDefaults = {};
 
@@ -11,13 +11,13 @@ const ABViewFormCustomDefaults = {
    // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewFormCustom extends ABViewFormItem {
+export default class ABViewFormCustom extends ABViewFormItem {
    constructor(values, application, parent, defaultValues) {
       super(
          values,
          application,
          parent,
-         defaultValues || ABViewFormCustomDefaults
+         defaultValues || ABViewFormCustomDefaults,
       );
    }
 
@@ -36,4 +36,4 @@ module.exports = class ABViewFormCustom extends ABViewFormItem {
    componentList() {
       return [];
    }
-};
+}

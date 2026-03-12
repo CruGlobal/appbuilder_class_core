@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewCarouselPropertyComponentDefaults = {
    dataviewID: null, // uuid of ABDatacollection
@@ -40,7 +40,7 @@ function parseOrDefault(_this, key) {
    }
 }
 
-module.exports = class ABViewCarouselCore extends ABViewWidget {
+export default class ABViewCarouselCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -99,4 +99,4 @@ module.exports = class ABViewCarouselCore extends ABViewWidget {
 
       return obj.fieldByID(this.settings.field);
    }
-};
+}

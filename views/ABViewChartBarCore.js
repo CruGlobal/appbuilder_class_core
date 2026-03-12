@@ -1,4 +1,4 @@
-const ABViewChartContainer = require("../../platform/views/ABViewChartContainer");
+import ABViewChartContainer from "../../platform/views/ABViewChartContainer.js";
 
 const ABViewChartBarPropertyComponentDefaults = {
    barType: "bar",
@@ -17,7 +17,7 @@ const ABViewDefaults = {
    labelKey: "Bar", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewChartBarCore extends ABViewChartContainer {
+export default class ABViewChartBarCore extends ABViewChartContainer {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -53,25 +53,25 @@ module.exports = class ABViewChartBarCore extends ABViewChartContainer {
 
       this.settings.isLegend = parseInt(
          this.settings.isLegend ??
-            ABViewChartBarPropertyComponentDefaults.isLegend
+            ABViewChartBarPropertyComponentDefaults.isLegend,
       );
 
       // this.settings.chartWidth = parseInt(this.settings.chartWidth || ABViewChartBarPropertyComponentDefaults.chartWidth);
       this.settings.height = parseInt(
-         this.settings.height ?? ABViewChartBarPropertyComponentDefaults.height
+         this.settings.height ?? ABViewChartBarPropertyComponentDefaults.height,
       );
 
       this.settings.labelFontSize = parseInt(
          this.settings.labelFontSize ??
-            ABViewChartBarPropertyComponentDefaults.labelFontSize
+            ABViewChartBarPropertyComponentDefaults.labelFontSize,
       );
       this.settings.stepValue = parseInt(
          this.settings.stepValue ??
-            ABViewChartBarPropertyComponentDefaults.stepValue
+            ABViewChartBarPropertyComponentDefaults.stepValue,
       );
       this.settings.maxValue = parseInt(
          this.settings.maxValue ??
-            ABViewChartBarPropertyComponentDefaults.maxValue
+            ABViewChartBarPropertyComponentDefaults.maxValue,
       );
 
       this.translate(this, this, ["barLabel"]);
@@ -84,4 +84,4 @@ module.exports = class ABViewChartBarCore extends ABViewChartContainer {
    componentList() {
       return [];
    }
-};
+}

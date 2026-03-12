@@ -1,4 +1,4 @@
-const ABViewFormCustom = require("../../platform/views/ABViewFormCustom");
+import ABViewFormCustom from "../../platform/views/ABViewFormCustom.js";
 
 const ABViewFormTreePropertyComponentDefaults = {};
 
@@ -8,7 +8,7 @@ const ABTreeDefaults = {
    labelKey: "ab.components.tree", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewFormTreeCore extends ABViewFormCustom {
+export default class ABViewFormTreeCore extends ABViewFormCustom {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABTreeDefaults);
    }
@@ -28,4 +28,4 @@ module.exports = class ABViewFormTreeCore extends ABViewFormCustom {
    componentList() {
       return [];
    }
-};
+}

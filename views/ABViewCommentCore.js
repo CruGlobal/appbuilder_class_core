@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewCommentPropertyComponentDefaults = {
    dataviewID: null,
@@ -16,7 +16,7 @@ const ABViewDefaults = {
    labelKey: "Comment", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewCommentCore extends ABViewWidget {
+export default class ABViewCommentCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -108,7 +108,7 @@ module.exports = class ABViewCommentCore extends ABViewWidget {
 
    getUserData() {
       let UserImageField = this.AB.objectUser().fieldByID(
-         "6383ce19-b344-44ee-87e6-decced7361f8"
+         "6383ce19-b344-44ee-87e6-decced7361f8",
       );
 
       var userObject = this.getUsers();
@@ -137,4 +137,4 @@ module.exports = class ABViewCommentCore extends ABViewWidget {
 
       return model;
    }
-};
+}

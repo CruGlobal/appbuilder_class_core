@@ -1,5 +1,5 @@
-const ABViewContainer = require("../../platform/views/ABViewContainer");
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewContainer from "../../platform/views/ABViewContainer.js";
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const PropertyComponentDefaults = {
    label: "",
@@ -12,7 +12,7 @@ const ABViewDefaults = {
    labelKey: "Layout", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewLayoutCore extends ABViewWidget {
+export default class ABViewLayoutCore extends ABViewWidget {
    /**
     * @param {obj} values  key=>value hash of ABView values
     * @param {ABApplication} application the application object this view is under
@@ -41,8 +41,8 @@ module.exports = class ABViewLayoutCore extends ABViewWidget {
             {
                key: ABViewContainer.common().key,
             },
-            this
-         )
+            this,
+         ),
       );
    }
 
@@ -78,4 +78,4 @@ module.exports = class ABViewLayoutCore extends ABViewWidget {
    get datacollection() {
       return null;
    }
-};
+}

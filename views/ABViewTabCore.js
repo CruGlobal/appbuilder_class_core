@@ -1,5 +1,5 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
-const ABViewContainer = require("../../platform/views/ABViewContainer");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
+import ABViewContainer from "../../platform/views/ABViewContainer.js";
 
 const ABViewTabPropertyComponentDefaults = {
    height: 0,
@@ -18,7 +18,7 @@ const ABViewTabDefaults = {
    labelKey: "Tab", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewTabCore extends ABViewWidget {
+export default class ABViewTabCore extends ABViewWidget {
    /**
     * @param {obj} values  key=>value hash of ABView values
     * @param {ABApplication} application the application object this view is under
@@ -67,7 +67,7 @@ module.exports = class ABViewTabCore extends ABViewWidget {
                label: tabName,
                tabicon: tabIcon,
             },
-            this
+            this,
          )
          .save();
    }
@@ -79,4 +79,4 @@ module.exports = class ABViewTabCore extends ABViewWidget {
    componentList() {
       return [];
    }
-};
+}

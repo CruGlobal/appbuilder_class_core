@@ -1,4 +1,4 @@
-const ABViewFormItem = require("../../platform/views/ABViewFormItem");
+import ABViewFormItem from "../../platform/views/ABViewFormItem.js";
 
 const ABViewFormDatepickerPropertyComponentDefaults = {
    timepicker: false,
@@ -10,13 +10,13 @@ const ABViewFormDatepickerDefaults = {
    labelKey: "ab.components.datepicker", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewFormDatepickerCore extends ABViewFormItem {
+export default class ABViewFormDatepickerCore extends ABViewFormItem {
    constructor(values, application, parent, defaultValues) {
       super(
          values,
          application,
          parent,
-         defaultValues || ABViewFormDatepickerDefaults
+         defaultValues || ABViewFormDatepickerDefaults,
       );
    }
 
@@ -39,4 +39,4 @@ module.exports = class ABViewFormDatepickerCore extends ABViewFormItem {
    componentList() {
       return [];
    }
-};
+}

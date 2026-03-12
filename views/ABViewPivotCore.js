@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewPivotPropertyComponentDefaults = {
    dataviewID: null,
@@ -16,7 +16,7 @@ const ABViewDefaults = {
    labelKey: "Pivot", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewPivotCore extends ABViewWidget {
+export default class ABViewPivotCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -45,21 +45,21 @@ module.exports = class ABViewPivotCore extends ABViewWidget {
       // Convert to boolean
       this.settings.removeMissed = JSON.parse(
          this.settings.removeMissed ||
-            ABViewPivotPropertyComponentDefaults.removeMissed
+            ABViewPivotPropertyComponentDefaults.removeMissed,
       );
       this.settings.totalColumn = JSON.parse(
          this.settings.totalColumn ||
-            ABViewPivotPropertyComponentDefaults.totalColumn
+            ABViewPivotPropertyComponentDefaults.totalColumn,
       );
       this.settings.separateLabel = JSON.parse(
          this.settings.separateLabel ||
-            ABViewPivotPropertyComponentDefaults.separateLabel
+            ABViewPivotPropertyComponentDefaults.separateLabel,
       );
       this.settings.min = JSON.parse(
-         this.settings.min || ABViewPivotPropertyComponentDefaults.min
+         this.settings.min || ABViewPivotPropertyComponentDefaults.min,
       );
       this.settings.max = JSON.parse(
-         this.settings.max || ABViewPivotPropertyComponentDefaults.max
+         this.settings.max || ABViewPivotPropertyComponentDefaults.max,
       );
 
       if (this.settings.structure && typeof this.settings.structure == "string")
@@ -67,7 +67,7 @@ module.exports = class ABViewPivotCore extends ABViewWidget {
 
       // "0" -> 0
       this.settings.height = parseInt(
-         this.settings.height || ABViewPivotPropertyComponentDefaults.height
+         this.settings.height || ABViewPivotPropertyComponentDefaults.height,
       );
    }
 
@@ -98,4 +98,4 @@ module.exports = class ABViewPivotCore extends ABViewWidget {
    componentList() {
       return [];
    }
-};
+}

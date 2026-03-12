@@ -1,4 +1,4 @@
-const ABViewContainer = require("../../platform/views/ABViewContainer");
+import ABViewContainer from "../../platform/views/ABViewContainer.js";
 
 const ABViewDetailDefaults = {
    key: "detail", // {string} unique key for this view
@@ -14,7 +14,7 @@ const ABViewDetailPropertyComponentDefaults = {
    height: 0,
 };
 
-module.exports = class ABViewDetailCore extends ABViewContainer {
+export default class ABViewDetailCore extends ABViewContainer {
    /**
     * @param {obj} values  key=>value hash of ABView values
     * @param {ABApplication} application the application object this view is under
@@ -49,16 +49,16 @@ module.exports = class ABViewDetailCore extends ABViewContainer {
       this.settings.showLabel = JSON.parse(
          this.settings.showLabel != null
             ? this.settings.showLabel
-            : ABViewDetailPropertyComponentDefaults.showLabel
+            : ABViewDetailPropertyComponentDefaults.showLabel,
       );
 
       // convert from "0" => 0
       this.settings.labelWidth = parseInt(
          this.settings.labelWidth ||
-            ABViewDetailPropertyComponentDefaults.labelWidth
+            ABViewDetailPropertyComponentDefaults.labelWidth,
       );
       this.settings.height = parseInt(
-         this.settings.height ?? ABViewDetailPropertyComponentDefaults.height
+         this.settings.height ?? ABViewDetailPropertyComponentDefaults.height,
       );
    }
 
@@ -101,4 +101,4 @@ module.exports = class ABViewDetailCore extends ABViewContainer {
 
       return newView;
    }
-};
+}

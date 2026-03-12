@@ -1,4 +1,4 @@
-const ABViewFormItem = require("../../platform/views/ABViewFormItem");
+import ABViewFormItem from "../../platform/views/ABViewFormItem.js";
 
 const ABViewFormCheckboxPropertyComponentDefaults = {};
 
@@ -8,13 +8,13 @@ const ABViewFormCheckboxDefaults = {
    labelKey: "ab.components.checkbox", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewFormCheckboxCore extends ABViewFormItem {
+export default class ABViewFormCheckboxCore extends ABViewFormItem {
    constructor(values, application, parent, defaultValues) {
       super(
          values,
          application,
          parent,
-         defaultValues || ABViewFormCheckboxDefaults
+         defaultValues || ABViewFormCheckboxDefaults,
       );
    }
 
@@ -33,4 +33,4 @@ module.exports = class ABViewFormCheckboxCore extends ABViewFormItem {
    componentList() {
       return [];
    }
-};
+}

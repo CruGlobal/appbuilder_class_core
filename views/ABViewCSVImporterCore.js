@@ -1,6 +1,5 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
-
-const ABRecordRule = require("../../rules/ABViewRuleListFormRecordRules");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
+import ABRecordRule from "../../rules/ABViewRuleListFormRecordRules.js";
 
 const ABViewCSVImporterDefaults = {
    key: "csvImporter",
@@ -58,13 +57,13 @@ const ABViewCSVImporterPropertyComponentDefaults = {
    // }]
 };
 
-module.exports = class ABViewCSVImporterCore extends ABViewWidget {
+export default class ABViewCSVImporterCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(
          values,
          application,
          parent,
-         defaultValues || ABViewCSVImporterDefaults
+         defaultValues || ABViewCSVImporterDefaults,
       );
    }
 
@@ -102,7 +101,8 @@ module.exports = class ABViewCSVImporterCore extends ABViewWidget {
 
       // convert from "0" => 0
       this.settings.width = parseInt(
-         this.settings.width || ABViewCSVImporterPropertyComponentDefaults.width
+         this.settings.width ||
+            ABViewCSVImporterPropertyComponentDefaults.width,
       );
    }
 
@@ -142,10 +142,10 @@ module.exports = class ABViewCSVImporterCore extends ABViewWidget {
 
       rowDatas.forEach((row) => {
          tasks.push(
-            this.RecordRule.process({ data: row.data || row, form: this })
+            this.RecordRule.process({ data: row.data || row, form: this }),
          );
       });
 
       return Promise.all(tasks);
    }
-};
+}

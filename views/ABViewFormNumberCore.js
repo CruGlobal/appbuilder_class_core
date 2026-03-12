@@ -1,4 +1,4 @@
-const ABViewFormItem = require("../../platform/views/ABViewFormItem");
+import ABViewFormItem from "../../platform/views/ABViewFormItem.js";
 
 const ABViewFormNumberPropertyComponentDefaults = {
    isStepper: 0,
@@ -10,13 +10,13 @@ const ABViewFormNumberDefaults = {
    labelKey: "ab.components.number", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewFormNumberCore extends ABViewFormItem {
+export default class ABViewFormNumberCore extends ABViewFormItem {
    constructor(values, application, parent, defaultValues) {
       super(
          values,
          application,
          parent,
-         defaultValues || ABViewFormNumberDefaults
+         defaultValues || ABViewFormNumberDefaults,
       );
    }
 
@@ -73,4 +73,4 @@ module.exports = class ABViewFormNumberCore extends ABViewFormItem {
    componentList() {
       return [];
    }
-};
+}

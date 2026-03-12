@@ -1,8 +1,7 @@
-const ABViewContainer = require("../../platform/views/ABViewContainer");
-const ABViewFormItem = require("../../platform/views/ABViewFormItem");
-
-const ABRecordRule = require("../../rules/ABViewRuleListFormRecordRules");
-const ABSubmitRule = require("../../rules/ABViewRuleListFormSubmitRules");
+import ABViewContainer from "../../platform/views/ABViewContainer.js";
+import ABViewFormItem from "../../platform/views/ABViewFormItem.js";
+import ABRecordRule from "../../rules/ABViewRuleListFormRecordRules.js";
+import ABSubmitRule from "../../rules/ABViewRuleListFormSubmitRules.js";
 
 const ABViewFormDefaults = {
    key: "form", // unique key identifier for this ABViewForm
@@ -53,7 +52,7 @@ const ABViewFormPropertyComponentDefaults = {
    submitRules: [],
 };
 
-module.exports = class ABViewFormCore extends ABViewContainer {
+export default class ABViewFormCore extends ABViewContainer {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewFormDefaults);
       this.isForm = true;
@@ -88,29 +87,29 @@ module.exports = class ABViewFormCore extends ABViewContainer {
       this.settings.showLabel = JSON.parse(
          this.settings.showLabel != null
             ? this.settings.showLabel
-            : ABViewFormPropertyComponentDefaults.showLabel
+            : ABViewFormPropertyComponentDefaults.showLabel,
       );
       this.settings.clearOnLoad = JSON.parse(
          this.settings.clearOnLoad != null
             ? this.settings.clearOnLoad
-            : ABViewFormPropertyComponentDefaults.clearOnLoad
+            : ABViewFormPropertyComponentDefaults.clearOnLoad,
       );
       this.settings.clearOnSave = JSON.parse(
          this.settings.clearOnSave != null
             ? this.settings.clearOnSave
-            : ABViewFormPropertyComponentDefaults.clearOnSave
+            : ABViewFormPropertyComponentDefaults.clearOnSave,
       );
 
       // convert from "0" => 0
       this.settings.labelWidth = parseInt(
          this.settings.labelWidth == null
             ? ABViewFormPropertyComponentDefaults.labelWidth
-            : this.settings.labelWidth
+            : this.settings.labelWidth,
       );
       this.settings.height = parseInt(
          this.settings.height == null
             ? ABViewFormPropertyComponentDefaults.height
-            : this.settings.height
+            : this.settings.height,
       );
    }
 
@@ -236,4 +235,4 @@ module.exports = class ABViewFormCore extends ABViewContainer {
 
       return SubmitRules.process({ data: rowData, form: this });
    }
-};
+}

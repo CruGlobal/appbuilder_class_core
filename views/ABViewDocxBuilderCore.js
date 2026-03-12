@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewDocxBuilderPropertyComponentDefaults = {
    buttonlabel: "Download DOCX",
@@ -17,7 +17,7 @@ const ABViewDefaults = {
    labelKey: "DOCX Builder", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewDocxBuilderCore extends ABViewWidget {
+export default class ABViewDocxBuilderCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -61,7 +61,8 @@ module.exports = class ABViewDocxBuilderCore extends ABViewWidget {
 
       // convert from "0" => 0
       this.settings.width = parseInt(
-         this.settings.width || ABViewDocxBuilderPropertyComponentDefaults.width
+         this.settings.width ||
+            ABViewDocxBuilderPropertyComponentDefaults.width,
       );
 
       this.translate(this, this, ["filelabel", "buttonlabel"]);
@@ -99,4 +100,4 @@ module.exports = class ABViewDocxBuilderCore extends ABViewWidget {
 
       return this.AB.datacollections((dv) => dvList.indexOf(dv.id) > -1) || [];
    }
-};
+}

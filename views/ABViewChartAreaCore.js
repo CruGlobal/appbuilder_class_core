@@ -1,4 +1,4 @@
-const ABViewChartContainer = require("../../platform/views/ABViewChartContainer");
+import ABViewChartContainer from "../../platform/views/ABViewChartContainer.js";
 
 const ABViewChartAreaPropertyComponentDefaults = {
    areaType: "area",
@@ -16,7 +16,7 @@ const ABViewDefaults = {
    labelKey: "Area", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewChartAreaCore extends ABViewChartContainer {
+export default class ABViewChartAreaCore extends ABViewChartContainer {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -48,26 +48,26 @@ module.exports = class ABViewChartAreaCore extends ABViewChartContainer {
 
       this.settings.isLegend = parseInt(
          this.settings.isLegend ??
-            ABViewChartAreaPropertyComponentDefaults.isLegend
+            ABViewChartAreaPropertyComponentDefaults.isLegend,
       );
 
       // this.settings.chartWidth = parseInt(this.settings.chartWidth || ABViewChartAreaPropertyComponentDefaults.chartWidth);
       this.settings.chartHeight = parseInt(
          this.settings.chartHeight ??
-            ABViewChartAreaPropertyComponentDefaults.chartHeight
+            ABViewChartAreaPropertyComponentDefaults.chartHeight,
       );
 
       this.settings.labelFontSize = parseInt(
          this.settings.labelFontSize ??
-            ABViewChartAreaPropertyComponentDefaults.labelFontSize
+            ABViewChartAreaPropertyComponentDefaults.labelFontSize,
       );
       this.settings.stepValue = parseInt(
          this.settings.stepValue ??
-            ABViewChartAreaPropertyComponentDefaults.stepValue
+            ABViewChartAreaPropertyComponentDefaults.stepValue,
       );
       this.settings.maxValue = parseInt(
          this.settings.maxValue ??
-            ABViewChartAreaPropertyComponentDefaults.maxValue
+            ABViewChartAreaPropertyComponentDefaults.maxValue,
       );
 
       this.translate(this, this, ["areaLabel"]);
@@ -80,4 +80,4 @@ module.exports = class ABViewChartAreaCore extends ABViewChartContainer {
    componentList() {
       return [];
    }
-};
+}

@@ -1,4 +1,4 @@
-const ABViewFormItem = require("../../platform/views/ABViewFormItem");
+import ABViewFormItem from "../../platform/views/ABViewFormItem.js";
 
 const ABViewFormJsonPropertyComponentDefaults = {
    type: "string", // 'string', 'systemObject' or 'filter'
@@ -10,13 +10,13 @@ const ABViewFormJsonDefaults = {
    labelKey: "ab.components.json", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewFormJsonCore extends ABViewFormItem {
+export default class ABViewFormJsonCore extends ABViewFormItem {
    constructor(values, application, parent, defaultValues) {
       super(
          values,
          application,
          parent,
-         defaultValues || ABViewFormJsonDefaults
+         defaultValues || ABViewFormJsonDefaults,
       );
    }
 
@@ -35,4 +35,4 @@ module.exports = class ABViewFormJsonCore extends ABViewFormItem {
    componentList() {
       return [];
    }
-};
+}

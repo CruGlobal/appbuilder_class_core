@@ -1,4 +1,4 @@
-const ABViewDetail = require("../../platform/views/ABViewDetail");
+import ABViewDetail from "../../platform/views/ABViewDetail.js";
 
 const ABViewDataviewPropertyComponentDefaults = {
    xCount: 1, // {int} the number of columns per row (need at least one)
@@ -14,7 +14,7 @@ const ABViewDataviewDefaults = {
    labelKey: "Data view", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewDataviewCore extends ABViewDetail {
+export default class ABViewDataviewCore extends ABViewDetail {
    /**
     * @param {obj} values  key=>value hash of ABView values
     * @param {ABApplication} application the application object this view is under
@@ -25,7 +25,7 @@ module.exports = class ABViewDataviewCore extends ABViewDetail {
          values,
          application,
          parent,
-         defaultValues || ABViewDataviewDefaults
+         defaultValues || ABViewDataviewDefaults,
       );
    }
 
@@ -51,7 +51,7 @@ module.exports = class ABViewDataviewCore extends ABViewDetail {
       super.fromValues(values);
 
       this.settings.xCount = parseInt(
-         this.settings.xCount || ABViewDataviewPropertyComponentDefaults.xCount
+         this.settings.xCount || ABViewDataviewPropertyComponentDefaults.xCount,
       );
       this.settings.detailsPage =
          this.settings.detailsPage ||
@@ -81,4 +81,4 @@ module.exports = class ABViewDataviewCore extends ABViewDetail {
 
       return dataview;
    }
-};
+}

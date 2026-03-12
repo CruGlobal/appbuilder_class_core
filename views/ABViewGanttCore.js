@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewGanttPropertyComponentDefaults = {
    dataviewID: "",
@@ -39,7 +39,7 @@ const ABViewDefaults = {
    labelKey: "Gantt", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewGanttCore extends ABViewWidget {
+export default class ABViewGanttCore extends ABViewWidget {
    /**
     * @param {obj} values  key=>value hash of ABView values
     * @param {ABApplication} application the application object this view is under
@@ -79,4 +79,4 @@ module.exports = class ABViewGanttCore extends ABViewWidget {
    componentList() {
       return [];
    }
-};
+}

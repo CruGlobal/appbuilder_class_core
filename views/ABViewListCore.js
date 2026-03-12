@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewListPropertyComponentDefaults = {
    dataviewID: null,
@@ -12,7 +12,7 @@ const ABViewDefaults = {
    labelKey: "List", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewLabelCore extends ABViewWidget {
+export default class ABViewLabelCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -42,4 +42,4 @@ module.exports = class ABViewLabelCore extends ABViewWidget {
 
       return object.fieldByID(this.settings.field);
    }
-};
+}

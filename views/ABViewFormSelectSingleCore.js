@@ -1,4 +1,4 @@
-const ABViewFormItem = require("../../platform/views/ABViewFormItem");
+import ABViewFormItem from "../../platform/views/ABViewFormItem.js";
 
 const ABViewFormSelectSinglePropertyComponentDefaults = {
    type: "richselect", // 'richselect' or 'radio'
@@ -10,13 +10,13 @@ const ABSelectSingleDefaults = {
    labelKey: "ab.components.selectsingle", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewFormSelectSingleCore extends ABViewFormItem {
+export default class ABViewFormSelectSingleCore extends ABViewFormItem {
    constructor(values, application, parent, defaultValues) {
       super(
          values,
          application,
          parent,
-         defaultValues || ABSelectSingleDefaults
+         defaultValues || ABSelectSingleDefaults,
       );
    }
 
@@ -35,4 +35,4 @@ module.exports = class ABViewFormSelectSingleCore extends ABViewFormItem {
    componentList() {
       return [];
    }
-};
+}

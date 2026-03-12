@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewCSVExporterDefaults = {
    key: "csvExporter", // unique key identifier for this ABViewForm
@@ -16,13 +16,13 @@ const ABViewCSVExporterPropertyComponentDefaults = {
    hiddenFieldIds: [],
 };
 
-module.exports = class ABViewCSVExporterCore extends ABViewWidget {
+export default class ABViewCSVExporterCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(
          values,
          application,
          parent,
-         defaultValues || ABViewCSVExporterDefaults
+         defaultValues || ABViewCSVExporterDefaults,
       );
    }
 
@@ -58,11 +58,11 @@ module.exports = class ABViewCSVExporterCore extends ABViewWidget {
       // convert from "0" => 0
       this.settings.width = parseInt(
          values.settings.width ||
-            ABViewCSVExporterPropertyComponentDefaults.width
+            ABViewCSVExporterPropertyComponentDefaults.width,
       );
 
       this.settings.hiddenFieldIds =
          values.settings.hiddenFieldIds ||
          ABViewCSVExporterPropertyComponentDefaults.hiddenFieldIds;
    }
-};
+}

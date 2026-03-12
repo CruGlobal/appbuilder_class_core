@@ -1,4 +1,4 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
 
 const ABViewGridPropertyComponentDefaults = {
    label: "",
@@ -184,7 +184,7 @@ function settingsDefaultJSON(base, field) {
    }
 }
 
-module.exports = class ABViewGridCore extends ABViewWidget {
+export default class ABViewGridCore extends ABViewWidget {
    /**
     * @param {obj} values  key=>value hash of ABView values
     * @param {ABApplication} application the application object this view is under
@@ -242,7 +242,7 @@ module.exports = class ABViewGridCore extends ABViewWidget {
 
       try {
          this.settings.gridFilter.filterOption = JSON.parse(
-            this.settings.gridFilter.filterOption
+            this.settings.gridFilter.filterOption,
          );
       } catch (e) {
          this.settings.gridFilter.filterOption =
@@ -251,7 +251,7 @@ module.exports = class ABViewGridCore extends ABViewWidget {
 
       try {
          this.settings.gridFilter.isGlobalToolbar = JSON.parse(
-            this.settings.gridFilter.isGlobalToolbar
+            this.settings.gridFilter.isGlobalToolbar,
          );
       } catch (e) {
          this.settings.gridFilter.isGlobalToolbar =
@@ -381,4 +381,4 @@ module.exports = class ABViewGridCore extends ABViewWidget {
    copyUpdateProperyList() {
       return ["detailsPage", "detailsTab", "editPage", "editTab"];
    }
-};
+}

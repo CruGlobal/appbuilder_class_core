@@ -1,4 +1,4 @@
-const ABViewChartContainer = require("../../platform/views/ABViewChartContainer");
+import ABViewChartContainer from "../../platform/views/ABViewChartContainer.js";
 
 const ABViewChartPiePropertyComponentDefaults = {
    pieType: "pie",
@@ -15,7 +15,7 @@ const ABViewDefaults = {
    labelKey: "Pie", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewChartPieCore extends ABViewChartContainer {
+export default class ABViewChartPieCore extends ABViewChartContainer {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -47,21 +47,21 @@ module.exports = class ABViewChartPieCore extends ABViewChartContainer {
 
       this.settings.isLegend = parseInt(
          this.settings.isLegend ??
-            ABViewChartPiePropertyComponentDefaults.isLegend
+            ABViewChartPiePropertyComponentDefaults.isLegend,
       );
 
       // this.settings.chartWidth = parseInt(this.settings.chartWidth || ABViewChartPiePropertyComponentDefaults.chartWidth);
       this.settings.height = parseInt(
-         this.settings.height ?? ABViewChartPiePropertyComponentDefaults.height
+         this.settings.height ?? ABViewChartPiePropertyComponentDefaults.height,
       );
 
       this.settings.innerFontSize = parseInt(
          this.settings.innerFontSize ??
-            ABViewChartPiePropertyComponentDefaults.innerFontSize
+            ABViewChartPiePropertyComponentDefaults.innerFontSize,
       );
       this.settings.labelFontSize = parseInt(
          this.settings.labelFontSize ??
-            ABViewChartPiePropertyComponentDefaults.labelFontSize
+            ABViewChartPiePropertyComponentDefaults.labelFontSize,
       );
 
       this.translate(this, this, ["pieLabel"]);
@@ -74,4 +74,4 @@ module.exports = class ABViewChartPieCore extends ABViewChartContainer {
    componentList() {
       return [];
    }
-};
+}

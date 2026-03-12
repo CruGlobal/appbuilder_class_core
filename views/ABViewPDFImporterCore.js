@@ -1,6 +1,5 @@
-const ABViewWidget = require("../../platform/views/ABViewWidget");
-
-const ABSubmitRule = require("../../rules/ABViewRuleListFormSubmitRules");
+import ABViewWidget from "../../platform/views/ABViewWidget.js";
+import ABSubmitRule from "../../rules/ABViewRuleListFormSubmitRules.js";
 
 const ABViewPDFImporterPropertyComponentDefaults = {
    dataviewID: null,
@@ -26,7 +25,7 @@ const ABViewDefaults = {
    labelKey: "PDF Importer", // {string} the multilingual label key for the class label
 };
 
-module.exports = class ABViewPDFImporterCore extends ABViewWidget {
+export default class ABViewPDFImporterCore extends ABViewWidget {
    constructor(values, application, parent, defaultValues) {
       super(values, application, parent, defaultValues || ABViewDefaults);
    }
@@ -99,4 +98,4 @@ module.exports = class ABViewPDFImporterCore extends ABViewWidget {
          SubmitRules.process({ data: rowData, form: this });
       });
    }
-};
+}
