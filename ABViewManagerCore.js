@@ -5,7 +5,7 @@ import Import_ABViewChartArea from "../platform/views/ABViewChartArea.js";
 import Import_ABViewChartBar from "../platform/views/ABViewChartBar.js";
 import Import_ABViewChartLine from "../platform/views/ABViewChartLine.js";
 import Import_ABViewChartPie from "../platform/views/ABViewChartPie.js";
-import Import_ABViewComment from "../platform/views/ABViewComment.js";
+// import Import_ABViewComment from "../platform/views/ABViewComment.js";
 import Import_ABViewConditionalContainer from "../platform/views/ABViewConditionalContainer.js";
 import Import_ABViewConnectDataFilter from "../platform/views/ABViewConnectDataFilter.js";
 import Import_ABViewContainer from "../platform/views/ABViewContainer.js";
@@ -68,7 +68,7 @@ var AllViews = [
    Import_ABViewChartBar,
    Import_ABViewChartLine,
    Import_ABViewChartPie,
-   Import_ABViewComment,
+   // Import_ABViewComment,
    Import_ABViewConditionalContainer,
    Import_ABViewConnectDataFilter,
    Import_ABViewContainer,
