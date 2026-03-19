@@ -13,7 +13,7 @@ var AllViews = [
    require("../platform/views/ABViewChartBar"),
    require("../platform/views/ABViewChartLine"),
    require("../platform/views/ABViewChartPie"),
-   require("../platform/views/ABViewComment"),
+   // require("../platform/views/ABViewComment"),
    require("../platform/views/ABViewConditionalContainer"),
    require("../platform/views/ABViewConnectDataFilter"),
    require("../platform/views/ABViewContainer"),
