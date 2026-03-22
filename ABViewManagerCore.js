@@ -46,7 +46,8 @@ var AllViews = [
    //
    // Detail Components
    //
-   require("../platform/views/ABViewDetail"),
+   // Detail: provided by platform/plugins/included/view_detail (Detail(plugin), key "detail").
+   // require("../platform/views/ABViewDetail"),
    require("../platform/views/ABViewDetailCheckbox"),
    require("../platform/views/ABViewDetailConnect"),
    require("../platform/views/ABViewDetailCustom"),
@@ -58,7 +59,8 @@ var AllViews = [
    //
    // Form Components
    //
-   require("../platform/views/ABViewForm"),
+   // Form: provided by platform/plugins/included/view_form (Form(plugin), key "form").
+   // require("../platform/views/ABViewForm"),
    require("../platform/views/ABViewFormButton"),
    require("../platform/views/ABViewFormCheckbox"),
    require("../platform/views/ABViewFormConnect"),
@@ -85,6 +87,10 @@ AllViews.forEach((v) => {
    }
    Views[v.common().key] = v;
 });
+
+// Plugin-included widgets only (see comments on ABViewDetail / ABViewForm above).
+delete Views["detail"];
+delete Views["form"];
 
 module.exports = class ABViewManagerCore {
    /**
