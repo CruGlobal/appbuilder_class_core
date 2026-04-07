@@ -17,11 +17,13 @@ var AllViews = [
    require("../platform/views/ABViewConditionalContainer"),
    require("../platform/views/ABViewConnectDataFilter"),
    require("../platform/views/ABViewContainer"),
-   require("../platform/views/ABViewCSVExporter"),
-   require("../platform/views/ABViewCSVImporter"),
+   // CSV exporter/importer: no platform/views/ABViewCSV*.js in this tree;
+   // register via platform/plugins/included (see index.js). Do not require missing modules.
+   // require("../platform/views/ABViewCSVExporter"),
+   // require("../platform/views/ABViewCSVImporter"),
    require("../platform/views/ABViewDataFilter"),
    // require("../platform/views/ABViewDataSelect"),
-   require("../platform/views/ABViewDataview"),
+   // require("../platform/views/ABViewDataview"),
    require("../platform/views/ABViewDocxBuilder"),
    require("../platform/views/ABViewGrid"),
    // require("../platform/views/ABViewImage"),
