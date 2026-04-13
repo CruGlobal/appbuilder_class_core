@@ -9,8 +9,8 @@ import Import_ABViewChartPie from "../platform/views/ABViewChartPie.js";
 import Import_ABViewConditionalContainer from "../platform/views/ABViewConditionalContainer.js";
 import Import_ABViewConnectDataFilter from "../platform/views/ABViewConnectDataFilter.js";
 import Import_ABViewContainer from "../platform/views/ABViewContainer.js";
-import Import_ABViewCSVExporter from "../platform/views/ABViewCSVExporter.js";
-import Import_ABViewCSVImporter from "../platform/views/ABViewCSVImporter.js";
+// import Import_ABViewCSVExporter from "../platform/views/ABViewCSVExporter.js";
+// import Import_ABViewCSVImporter from "../platform/views/ABViewCSVImporter.js";
 import Import_ABViewDataFilter from "../platform/views/ABViewDataFilter.js";
 // import Import_ABViewDataSelect from "../platform/views/ABViewDataSelect.js";
 import Import_ABViewDataview from "../platform/views/ABViewDataview.js";
@@ -61,7 +61,6 @@ import Import_ABViewFormURL from "../platform/views/ABViewFormURL.js";
  */
 
 var AllViews = [
-<<<<<<< HEAD
    Import_ABView,
    // Import_ABViewCarousel,
    Import_ABViewChart,
@@ -73,8 +72,8 @@ var AllViews = [
    Import_ABViewConditionalContainer,
    Import_ABViewConnectDataFilter,
    Import_ABViewContainer,
-   Import_ABViewCSVExporter,
-   Import_ABViewCSVImporter,
+   // Import_ABViewCSVExporter,
+   // Import_ABViewCSVImporter,
    Import_ABViewDataFilter,
    // Import_ABViewDataSelect,
    Import_ABViewDataview,
@@ -90,36 +89,6 @@ var AllViews = [
    Import_ABViewPivot,
    // Import_ABViewTab,
    // Import_ABViewText,
-=======
-   require("../platform/views/ABView"),
-   // require("../platform/views/ABViewCarousel"),
-   require("../platform/views/ABViewChart"),
-   require("../platform/views/ABViewChartArea"),
-   require("../platform/views/ABViewChartBar"),
-   require("../platform/views/ABViewChartLine"),
-   require("../platform/views/ABViewChartPie"),
-   // require("../platform/views/ABViewComment"),
-   require("../platform/views/ABViewConditionalContainer"),
-   require("../platform/views/ABViewConnectDataFilter"),
-   require("../platform/views/ABViewContainer"),
-   // require("../platform/views/ABViewCSVExporter"),
-   // require("../platform/views/ABViewCSVImporter"),
-   require("../platform/views/ABViewDataFilter"),
-   // require("../platform/views/ABViewDataSelect"),
-   require("../platform/views/ABViewDataview"),
-   require("../platform/views/ABViewDocxBuilder"),
-   require("../platform/views/ABViewGrid"),
-   // require("../platform/views/ABViewImage"),
-   // require("../platform/views/ABViewLabel"),
-   // require("../platform/views/ABViewLayout"),
-   // require("../platform/views/ABViewList"),
-   require("../platform/views/ABViewMenu"),
-   require("../platform/views/ABViewPage"),
-   // require("../platform/views/ABViewPDFImporter"),
-   require("../platform/views/ABViewPivot"),
-   // require("../platform/views/ABViewTab"),
-   // require("../platform/views/ABViewText"),
->>>>>>> a7b2f392277e743ea89d4494094533d290d34729
 
    //
    // Special Editors
