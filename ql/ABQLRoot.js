@@ -7,4 +7,4 @@ import QLRootObject from "../../platform/ql/ABQLRootObject.js";
  *
  */
 
-module.exports = [QLRootObject];
+export default [QLRootObject];
