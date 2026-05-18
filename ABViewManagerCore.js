@@ -38,8 +38,8 @@ var AllViews = [
    //
    // Special Editors
    //
-   require("../platform/views/ABViewGantt"),
    // require("../platform/views/ABViewKanban"),
+   // require("../platform/views/ABViewGantt"),
    require("../platform/views/ABViewReportsManager"),
    require("../platform/views/ABViewScheduler"),
 
