@@ -92,10 +92,10 @@ jobs:
         with:
           path: web
           repository: CruGlobal/ab_service_web      
-      - run: npm i
+      - run: pnmp i
         working-directory: ./ab_platform_web
       - name: Webpack
-        run: npm run build:update
+        run: pnmp run build:update
         working-directory: ./ab_platform_web
       # webpack expects the folder to be called "web" ab-install action expects "ab_service_web"
       - run: mv web ab_service_web
@@ -108,7 +108,7 @@ jobs:
           repository: CruGlobal/kitchensink_app
           path: AppBuilder/test/e2e/cypress/e2e/kitchensink_app
       # These next steps are to save our ablogs to file
-      - run: npm install pm2@latest -g
+      - run: pnmp install pm2@latest -g
       - name: Save Logs
         run: pm2 start ./logs.js -- --toFile logs/ABServices.log
         working-directory: ./AppBuilder
@@ -120,7 +120,7 @@ jobs:
           resource: http://localhost:80
           timeout: 300000
       - name: Run Cypress Tests
-        run: npm run test:e2e:app -- --browser chrome
+        run: pnmp run test:e2e:app -- --browser chrome
         working-directory: ./AppBuilder
       - name: Save Screenshots 
         uses: actions/upload-artifact@v4

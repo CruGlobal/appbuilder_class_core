@@ -28,7 +28,7 @@ jobs:
           ref: ${{ inputs.ref }}
 
       - name: Install semver
-        run: npm i semver -g
+        run: pnmp i semver -g
 
       - name: Increment the Runtime Version
         id: increment_version
