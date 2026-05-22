@@ -16,7 +16,7 @@ var AllViews = [
    // require("../platform/views/ABViewComment"),
    require("../platform/views/ABViewConditionalContainer"),
    require("../platform/views/ABViewConnectDataFilter"),
-   require("../platform/views/ABViewContainer"),
+   // require("../platform/views/ABViewContainer"),
    // require("../platform/views/ABViewCSVExporter"),
    // require("../platform/views/ABViewCSVImporter"),
    require("../platform/views/ABViewDataFilter"),
@@ -46,7 +46,7 @@ var AllViews = [
    //
    // Detail Components
    //
-   require("../platform/views/ABViewDetail"),
+   // require("../platform/views/ABViewDetail"),
    require("../platform/views/ABViewDetailCheckbox"),
    require("../platform/views/ABViewDetailConnect"),
    require("../platform/views/ABViewDetailCustom"),

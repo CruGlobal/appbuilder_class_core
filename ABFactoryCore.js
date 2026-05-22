@@ -771,8 +771,9 @@ class ABFactory extends EventEmitter {
    //
    // Plugin
    //
-   pluginAPI() {
+   pluginAPI(additionalResources = {}) {
       let api = this.ClassManager.getPluginAPI();
+      api = Object.assign(api, additionalResources);
       api.AB = this;
       api.platform = this.platform ?? "service";
       return api;
@@ -785,8 +786,8 @@ class ABFactory extends EventEmitter {
       return Promise.resolve();
    }
 
-   pluginRegister(plugin) {
-      let pluginClass = plugin(this.pluginAPI());
+   pluginRegister(plugin, additionalResources = {}) {
+      let pluginClass = plugin(this.pluginAPI(additionalResources));
       if (Array.isArray(pluginClass)) {
          pluginClass.forEach((p) => {
             this.ClassManager.pluginRegister(p);
