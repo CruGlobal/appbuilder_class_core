@@ -8,11 +8,11 @@
 var AllViews = [
    require("../platform/views/ABView"),
    // require("../platform/views/ABViewCarousel"),
-   require("../platform/views/ABViewChart"),
-   require("../platform/views/ABViewChartArea"),
-   require("../platform/views/ABViewChartBar"),
-   require("../platform/views/ABViewChartLine"),
-   require("../platform/views/ABViewChartPie"),
+   // require("../platform/views/ABViewChart"),
+   // require("../platform/views/ABViewChartArea"),
+   // require("../platform/views/ABViewChartBar"),
+   // require("../platform/views/ABViewChartLine"),
+   // require("../platform/views/ABViewChartPie"),
    // require("../platform/views/ABViewComment"),
    require("../platform/views/ABViewConditionalContainer"),
    require("../platform/views/ABViewConnectDataFilter"),
@@ -31,15 +31,15 @@ var AllViews = [
    require("../platform/views/ABViewMenu"),
    require("../platform/views/ABViewPage"),
    // require("../platform/views/ABViewPDFImporter"),
-   require("../platform/views/ABViewPivot"),
+   // require("../platform/views/ABViewPivot"),
    // require("../platform/views/ABViewTab"),
    // require("../platform/views/ABViewText"),
 
    //
    // Special Editors
    //
-   require("../platform/views/ABViewGantt"),
    // require("../platform/views/ABViewKanban"),
+   // require("../platform/views/ABViewGantt"),
    require("../platform/views/ABViewReportsManager"),
    require("../platform/views/ABViewScheduler"),
 
@@ -121,7 +121,10 @@ module.exports = class ABViewManagerCore {
             if (!isPlugin(values.key)) {
                console.error(
                   "!! View[" +
-                     values.key +
+                  values.key + 
+                  " (" +
+                  values.name +
+                  ")" +
                      "] not yet defined.  Have an ABView instead:"
                );
             }
