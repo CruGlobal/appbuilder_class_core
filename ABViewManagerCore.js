@@ -1,10 +1,10 @@
 import Import_ABView from "../platform/views/ABView.js";
 // import Import_ABViewCarousel from "../platform/views/ABViewCarousel.js";
-import Import_ABViewChart from "../platform/views/ABViewChart.js";
-import Import_ABViewChartArea from "../platform/views/ABViewChartArea.js";
-import Import_ABViewChartBar from "../platform/views/ABViewChartBar.js";
-import Import_ABViewChartLine from "../platform/views/ABViewChartLine.js";
-import Import_ABViewChartPie from "../platform/views/ABViewChartPie.js";
+// import Import_ABViewChart from "../platform/views/ABViewChart.js";
+// import Import_ABViewChartArea from "../platform/views/ABViewChartArea.js";
+// import Import_ABViewChartBar from "../platform/views/ABViewChartBar.js";
+// import Import_ABViewChartLine from "../platform/views/ABViewChartLine.js";
+// import Import_ABViewChartPie from "../platform/views/ABViewChartPie.js";
 // import Import_ABViewComment from "../platform/views/ABViewComment.js";
 import Import_ABViewConditionalContainer from "../platform/views/ABViewConditionalContainer.js";
 import Import_ABViewConnectDataFilter from "../platform/views/ABViewConnectDataFilter.js";
@@ -23,11 +23,11 @@ import Import_ABViewGrid from "../platform/views/ABViewGrid.js";
 import Import_ABViewMenu from "../platform/views/ABViewMenu.js";
 import Import_ABViewPage from "../platform/views/ABViewPage.js";
 // import Import_ABViewPDFImporter from "../platform/views/ABViewPDFImporter.js";
-import Import_ABViewPivot from "../platform/views/ABViewPivot.js";
+// import Import_ABViewPivot from "../platform/views/ABViewPivot.js";
 // import Import_ABViewTab from "../platform/views/ABViewTab.js";
 // import Import_ABViewText from "../platform/views/ABViewText.js";
-import Import_ABViewGantt from "../platform/views/ABViewGantt.js";
-import Import_ABViewKanban from "../platform/views/ABViewKanban.js";
+// import Import_ABViewGantt from "../platform/views/ABViewGantt.js";
+// import Import_ABViewKanban from "../platform/views/ABViewKanban.js";
 import Import_ABViewReportsManager from "../platform/views/ABViewReportsManager.js";
 import Import_ABViewScheduler from "../platform/views/ABViewScheduler.js";
 import Import_ABViewDetail from "../platform/views/ABViewDetail.js";
@@ -63,11 +63,11 @@ import Import_ABViewFormURL from "../platform/views/ABViewFormURL.js";
 var AllViews = [
    Import_ABView,
    // Import_ABViewCarousel,
-   Import_ABViewChart,
-   Import_ABViewChartArea,
-   Import_ABViewChartBar,
-   Import_ABViewChartLine,
-   Import_ABViewChartPie,
+   // Import_ABViewChart,
+   // Import_ABViewChartArea,
+   // Import_ABViewChartBar,
+   // Import_ABViewChartLine,
+   // Import_ABViewChartPie,
    // Import_ABViewComment,
    Import_ABViewConditionalContainer,
    Import_ABViewConnectDataFilter,
@@ -86,17 +86,18 @@ var AllViews = [
    Import_ABViewMenu,
    Import_ABViewPage,
    // Import_ABViewPDFImporter,
-   Import_ABViewPivot,
+   // Import_ABViewPivot,
    // Import_ABViewTab,
    // Import_ABViewText,
 
    //
    // Special Editors
    //
-   Import_ABViewGantt,
-   Import_ABViewKanban,
+   // Import_ABViewGantt,
+   // Import_ABViewKanban,
    Import_ABViewReportsManager,
    Import_ABViewScheduler,
+
 
    //
    // Detail Components
@@ -176,8 +177,12 @@ export default class ABViewManagerCore {
             if (!isPlugin(values.key)) {
                console.error(
                   "!! View[" +
-                     values.key +
-                     "] not yet defined.  Have an ABView instead:",
+                  values.key + 
+                  " (" +
+                  values.name +
+                  ")" +
+                     "] not yet defined.  Have an ABView instead:"
+
                );
             }
             return new Views["view"](values, application, parent);
