@@ -45,6 +45,10 @@ export default class ABApplicationCore extends ABMLClass {
    constructor(attributes, AB) {
       super(["label", "description"], AB);
 
+      this.fromValues(attributes);
+   }
+
+   fromValues(attributes) {
       // attributes should be in format:
       // {
       //    id:##,
