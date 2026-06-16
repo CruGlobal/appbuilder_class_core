@@ -998,7 +998,7 @@ export default class ABModelCore {
                   row[f.columnName] = JSON.parse(val);
                } catch (e) {
                   // sometimes "list" fields are not JSON parseable
-                  if (f.key != "list") {
+                  if (f.key != "list" && val !== "[object Object]") {
                      console.error(
                         "Error parsing JSON data for column: " + f.columnName,
                         val,

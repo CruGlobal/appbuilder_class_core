@@ -15,7 +15,7 @@ import Import_ABViewDataFilter from "../platform/views/ABViewDataFilter.js";
 // import Import_ABViewDataSelect from "../platform/views/ABViewDataSelect.js";
 import Import_ABViewDataview from "../platform/views/ABViewDataview.js";
 import Import_ABViewDocxBuilder from "../platform/views/ABViewDocxBuilder.js";
-import Import_ABViewGrid from "../platform/views/ABViewGrid.js";
+// import Import_ABViewGrid from "../platform/views/ABViewGrid.js";
 // import Import_ABViewImage from "../platform/views/ABViewImage.js";
 // import Import_ABViewLabel from "../platform/views/ABViewLabel.js";
 // import Import_ABViewLayout from "../platform/views/ABViewLayout.js";
@@ -78,7 +78,7 @@ var AllViews = [
    // Import_ABViewDataSelect,
    Import_ABViewDataview,
    Import_ABViewDocxBuilder,
-   Import_ABViewGrid,
+   // Import_ABViewGrid,
    // Import_ABViewImage,
    // Import_ABViewLabel,
    // Import_ABViewLayout,
