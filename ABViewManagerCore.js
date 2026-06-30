@@ -21,7 +21,7 @@ var AllViews = [
    // require("../platform/views/ABViewCSVImporter"),
    require("../platform/views/ABViewDataFilter"),
    // require("../platform/views/ABViewDataSelect"),
-   require("../platform/views/ABViewDataview"),
+   // require("../platform/views/ABViewDataview"),
    // require("../platform/views/ABViewDocxBuilder"),
    // require("../platform/views/ABViewGrid"),
    // require("../platform/views/ABViewImage"),
@@ -54,24 +54,6 @@ var AllViews = [
    // require("../platform/views/ABViewDetailSelectivity"),
    require("../platform/views/ABViewDetailText"),
    require("../platform/views/ABViewDetailTree"),
-
-   //
-   // Form Components
-   //
-   require("../platform/views/ABViewForm"),
-   require("../platform/views/ABViewFormButton"),
-   require("../platform/views/ABViewFormCheckbox"),
-   require("../platform/views/ABViewFormConnect"),
-   require("../platform/views/ABViewFormCustom"),
-   require("../platform/views/ABViewFormDatepicker"),
-   require("../platform/views/ABViewFormJson"),
-   require("../platform/views/ABViewFormNumber"),
-   require("../platform/views/ABViewFormReadonly"),
-   require("../platform/views/ABViewFormSelectMultiple"),
-   require("../platform/views/ABViewFormSelectSingle"),
-   require("../platform/views/ABViewFormTextbox"),
-   require("../platform/views/ABViewFormTree"),
-   require("../platform/views/ABViewFormURL"),
 ];
 
 /*
