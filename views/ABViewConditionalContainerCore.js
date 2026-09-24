@@ -17,39 +17,45 @@ export default class ABViewConditionalContainerCore extends ABViewContainer {
 
       const L = (...params) => this.AB.Multilingual.label(...params);
 
-      // the conditional container always has 'If' and 'Else' panels
-      if (this.views((v) => v instanceof ABViewContainer).length < 2) {
-         this._views = [];
+      // Plugin view containers are not instanceof the platform ABViewContainer.
+      // Clearing _views here dropped the saved If/Else panels and replaced
+      // them with two id-less containers that share one webix id.
+      const containerPanels = this.views((v) => v?.key === "viewcontainer");
+      if (containerPanels.length < 2) {
+         const hasIf = this.views((v) => v?.name === "If").length > 0;
+         const hasElse = this.views((v) => v?.name === "Else").length > 0;
 
-         // 'If' panel
-         const ifPanel = application.viewNew(
-            {
-               key: ABViewContainer.common().key,
-               label: L("If"),
-               name: "If",
-               settings: {
-                  removable: false,
+         if (!hasIf) {
+            const ifPanel = application.viewNew(
+               {
+                  key: ABViewContainer.common().key,
+                  label: L("If"),
+                  name: "If",
+                  settings: {
+                     removable: false,
+                  },
                },
-            },
-            this,
-         );
+               this,
+            );
 
-         this._views.push(ifPanel);
+            this._views.push(ifPanel);
+         }
 
-         // 'Else' panel
-         const elsePanel = application.viewNew(
-            {
-               key: ABViewContainer.common().key,
-               label: L("Else"),
-               name: "Else",
-               settings: {
-                  removable: false,
+         if (!hasElse) {
+            const elsePanel = application.viewNew(
+               {
+                  key: ABViewContainer.common().key,
+                  label: L("Else"),
+                  name: "Else",
+                  settings: {
+                     removable: false,
+                  },
                },
-            },
-            this,
-         );
+               this,
+            );
 
-         this._views.push(elsePanel);
+            this._views.push(elsePanel);
+         }
       }
    }
 
