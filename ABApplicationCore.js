@@ -740,10 +740,14 @@ export default class ABApplicationCore extends ABMLClass {
    /**
     * @method viewAll()
     * return a list of all the {ABViewxxx} classes available.
+    * Passes this application's platform so web vs pwa plugins resolve correctly.
     * @return {array} of ABView objects
     */
    viewAll(fn = () => true) {
-      return this.ViewManager.allViews(fn);
+      const raw = (this.appType || "web").toString().trim().toLowerCase();
+      const platform =
+         raw === "mobile" || raw === "pwa" ? "pwa" : "web";
+      return this.ViewManager.allViews(fn, platform);
    }
 
    ///
