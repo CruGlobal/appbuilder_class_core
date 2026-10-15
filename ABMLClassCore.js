@@ -168,8 +168,6 @@ export default class ABMLClassCore extends ABEmitter {
 
                // copy each field to the root object
                fields.forEach(function (f) {
-                  if (t[f] != null) obj[f] = t[f];
-
                   obj[f] = t[f] || ""; // default to '' if not found.
                });
             }
