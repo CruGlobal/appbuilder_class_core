@@ -494,7 +494,9 @@ export default class FilterComplexCore extends ABComponent {
    queryFieldValid(rowData, rule, compareValue) {
       let result = false;
 
-      if (!compareValue) return result;
+      // compareValue should be a "queryId:fieldId" string. Other rule types
+      // (ex: dates, lists) can fall through to here with a Date or an array.
+      if (!compareValue || typeof compareValue != "string") return result;
 
       // queryId:fieldId
       const queryId = compareValue.split(":")[0],
