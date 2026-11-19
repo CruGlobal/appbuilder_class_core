@@ -11,6 +11,7 @@ import Import_ABProcessTaskServiceCalculate from "../../platform/process/tasks/A
 import Import_ABProcessTaskServiceInsertRecord from "../../platform/process/tasks/ABProcessTaskServiceInsertRecord.js";
 import Import_ABProcessTaskServiceQuery from "../../platform/process/tasks/ABProcessTaskServiceQuery.js";
 import Import_ABProcessTaskServiceGetResetPasswordUrl from "../../platform/process/tasks/ABProcessTaskServiceGetResetPasswordUrl.js";
+import Import_ABProcessTaskServiceTLReportsEmail from "../../platform/process/tasks/ABProcessTaskServiceTLReportsEmail.js";
 import Import_ABProcessTaskSubProcess from "../../platform/process/tasks/ABProcessTaskSubProcess.js";
 import Import_ABProcessTaskUser from "../../platform/process/tasks/ABProcessTaskUser.js";
 import Import_ABProcessTaskUserApproval from "../../platform/process/tasks/ABProcessTaskUserApproval.js";
@@ -58,6 +59,7 @@ var AllProcessElements = [
    Import_ABProcessTaskServiceInsertRecord,
    Import_ABProcessTaskServiceQuery,
    Import_ABProcessTaskServiceGetResetPasswordUrl,
+   Import_ABProcessTaskServiceTLReportsEmail,
    Import_ABProcessTaskSubProcess,
    Import_ABProcessTaskUser,
    Import_ABProcessTaskUserApproval,
